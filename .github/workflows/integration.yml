@@ -1,0 +1,36 @@
+name: integration
+
+on:
+  workflow_dispatch:
+  pull_request:
+    types: [labeled]
+    branches: [main]
+
+jobs:
+  windows:
+    if: github.event_name == 'workflow_dispatch' || contains(github.event.pull_request.labels.*.name, 'integration')
+    runs-on: [self-hosted, windows]
+    defaults:
+      run:
+        shell: bash
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-go@v5
+        with:
+          go-version: '1.27'
+
+      - name: Install proto toolchain
+        run: |
+          ./scripts/setup-protoc.sh
+          echo "$HOME/.local/bin" >> "$GITHUB_PATH"
+
+      - name: Test (Windows)
+        run: |
+          go work sync
+          go -C api test ./...
+          go -C daemon test ./...
+          go -C cli test ./...
+
+      - name: Round trip over named pipe
+        run: ./scripts/integration/status-roundtrip.sh

@@ -1,0 +1,91 @@
+syntax = "proto3";
+
+package runorka.v1;
+
+option go_package = "runorka.dev/runorka/api/gen/go/runorka/v1;runorkav1";
+
+// Daemon is the single Runorka service. It is the only owner of
+// infrastructure state and logic; CLI and desktop are thin clients.
+service Daemon {
+  // Ping returns daemon identity and liveness.
+  rpc Ping(PingRequest) returns (PingResponse);
+  // GetStatus returns the full environment status snapshot.
+  rpc GetStatus(GetStatusRequest) returns (EnvironmentStatus);
+  // GetRepairPlan lists safe repairs available for the current state.
+  rpc GetRepairPlan(GetRepairPlanRequest) returns (RepairPlan);
+  // ExecuteRepair runs a repair action. Destructive actions require
+  // confirmed = true.
+  rpc ExecuteRepair(ExecuteRepairRequest) returns (RepairOutcome);
+  // Shutdown requests a graceful daemon stop.
+  rpc Shutdown(ShutdownRequest) returns (ShutdownResponse);
+}
+
+enum Status {
+  STATUS_UNSPECIFIED = 0;
+  HEALTHY = 1;
+  WARNING = 2;
+  CRITICAL = 3;
+  UNKNOWN = 4;
+}
+
+message PingRequest {}
+
+message PingResponse {
+  string version = 1;
+  string daemon_state = 2; // running | stopping
+  int64 uptime_seconds = 3;
+  string socket = 4;
+}
+
+message ComponentStatus {
+  string id = 1;
+  Status status = 2;
+  string summary = 3;
+  string reason = 4;
+  string recommendation = 5;
+  bool safe_to_fix = 6;
+  bool requires_confirmation = 7;
+}
+
+message GetStatusRequest {}
+
+message EnvironmentStatus {
+  string version = 1;
+  string daemon_state = 2;
+  int64 uptime_seconds = 3;
+  string socket = 4;
+  Status overall_status = 5;
+  repeated ComponentStatus components = 6;
+}
+
+message GetRepairPlanRequest {}
+
+message RepairAction {
+  string component_id = 1;
+  string action_id = 2;
+  string summary = 3;
+  string description = 4;
+  bool safe = 5;
+  bool requires_confirmation = 6;
+}
+
+message RepairPlan {
+  repeated RepairAction actions = 1;
+  string evaluated_at = 2; // RFC3339 UTC
+}
+
+message ExecuteRepairRequest {
+  string action_id = 1;
+  bool confirmed = 2;
+}
+
+message RepairOutcome {
+  string action_id = 1;
+  string component_id = 2;
+  bool success = 3;
+  string result = 4;
+  string verification = 5;
+}
+
+message ShutdownRequest {}
+message ShutdownResponse {}

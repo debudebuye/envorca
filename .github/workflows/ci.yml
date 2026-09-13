@@ -1,0 +1,66 @@
+name: ci
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  build-test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-go@v5
+        with:
+          go-version: '1.27'
+
+      - uses: actions/cache@v4
+        with:
+          path: |
+            ~/.cache/go-build
+            ~/go/pkg/mod
+          key: go-${{ runner.os }}-${{ hashFiles('**/go.sum') }}
+
+      - name: Install proto toolchain
+        run: |
+          ./scripts/setup-protoc.sh
+          echo "$HOME/.local/bin" >> "$GITHUB_PATH"
+
+      - name: Install protoc plugins
+        run: |
+          go install google.golang.org/protobuf/cmd/protoc-gen-go@v1.36.12
+          go install google.golang.org/grpc/cmd/protoc-gen-go-grpc@v1.6.2
+          echo "$(go env GOPATH)/bin" >> "$GITHUB_PATH"
+
+      - name: Verify generated code is current
+        run: |
+          ./scripts/gen-proto.sh
+          git diff --exit-code -- api/gen
+
+      - name: Vet
+        run: |
+          go work sync
+          go -C api vet ./...
+          go -C daemon vet ./...
+          go -C cli vet ./...
+
+      - name: Test
+        run: |
+          go -C api test ./...
+          go -C daemon test ./...
+          go -C cli test ./...
+
+      - name: Build Linux binaries
+        run: |
+          mkdir -p bin
+          go -C daemon build -o ../bin/runorkad ./cmd/runorkad
+          go -C cli build -o ../bin/runorka ./cmd/runorka
+
+      - name: Cross-compile Windows binaries
+        run: |
+          (cd daemon && CGO_ENABLED=0 GOOS=windows GOARCH=amd64 go build -o ../bin/runorkad.exe ./cmd/runorkad)
+          (cd cli && CGO_ENABLED=0 GOOS=windows GOARCH=amd64 go build -o ../bin/runorka.exe ./cmd/runorka)
+
+      - name: Daemon<->CLI round trip
+        run: ./scripts/integration/status-roundtrip.sh

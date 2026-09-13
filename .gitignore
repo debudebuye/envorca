@@ -1,0 +1,29 @@
+/bin/
+/dist/
+*.exe
+*.test
+*.out
+coverage/
+.env
+node_modules/
+
+# Build artifacts
+/runorkad
+/runorka
+daemon/runorkad
+cli/runorka
+
+# Credentials and secrets — never commit these.
+.env.*
+!.env.example
+*.key
+*.pem
+*.p12
+*.pfx
+*.token
+*.secret
+credentials*
+.netrc
+.vault/
+id_rsa*
+id_ed25519*
