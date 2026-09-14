@@ -1,11 +1,11 @@
-module envorka.dev/envorka/cli
+module envorca.dev/envorca/cli
 
 go 1.27
 
 require (
 	github.com/spf13/cobra v1.10.2
 	google.golang.org/grpc v1.83.2
-	envorka.dev/envorka/api v0.0.0
+	envorca.dev/envorca/api v0.0.0
 )
 
 require (
@@ -19,4 +19,4 @@ require (
 	google.golang.org/protobuf v1.36.12 // indirect
 )
 
-replace envorka.dev/envorka/api => ../api
+replace envorca.dev/envorca/api => ../api

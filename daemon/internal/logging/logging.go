@@ -35,5 +35,5 @@ func OpenFile(dir string) (*os.File, error) {
 	if err := os.MkdirAll(dir, 0o755); err != nil {
 		return nil, err
 	}
-	return os.OpenFile(filepath.Join(dir, "envorka.log"), os.O_CREATE|os.O_APPEND|os.O_WRONLY, 0o600)
+	return os.OpenFile(filepath.Join(dir, "envorca.log"), os.O_CREATE|os.O_APPEND|os.O_WRONLY, 0o600)
 }

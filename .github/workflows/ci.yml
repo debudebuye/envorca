@@ -54,13 +54,13 @@ jobs:
       - name: Build Linux binaries
         run: |
           mkdir -p bin
-          go -C daemon build -o ../bin/envorkad ./cmd/envorkad
-          go -C cli build -o ../bin/envorka ./cmd/envorka
+          go -C daemon build -o ../bin/envorcad ./cmd/envorcad
+          go -C cli build -o ../bin/envorca ./cmd/envorca
 
       - name: Cross-compile Windows binaries
         run: |
-          (cd daemon && CGO_ENABLED=0 GOOS=windows GOARCH=amd64 go build -o ../bin/envorkad.exe ./cmd/envorkad)
-          (cd cli && CGO_ENABLED=0 GOOS=windows GOARCH=amd64 go build -o ../bin/envorka.exe ./cmd/envorka)
+          (cd daemon && CGO_ENABLED=0 GOOS=windows GOARCH=amd64 go build -o ../bin/envorcad.exe ./cmd/envorcad)
+          (cd cli && CGO_ENABLED=0 GOOS=windows GOARCH=amd64 go build -o ../bin/envorca.exe ./cmd/envorca)
 
       - name: Daemon<->CLI round trip
         run: ./scripts/integration/status-roundtrip.sh

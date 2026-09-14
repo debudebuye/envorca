@@ -11,8 +11,8 @@ import (
 	"fmt"
 	"strings"
 
-	envorkav1 "envorka.dev/envorka/api/gen/go/envorka/v1"
-	"envorka.dev/envorka/daemon/internal/wsl"
+	envorcav1 "envorca.dev/envorca/api/gen/go/envorca/v1"
+	"envorca.dev/envorca/daemon/internal/wsl"
 )
 
 // Action is one repair operation tied to a health component.
@@ -24,7 +24,7 @@ type Action interface {
 	RequiresConfirmation() bool
 	// CanExecute reports whether the action is applicable to the given
 	// component states. The daemon only proposes actions that CanExecute.
-	CanExecute(components []*envorkav1.ComponentStatus) bool
+	CanExecute(components []*envorcav1.ComponentStatus) bool
 	Execute(ctx context.Context, runner wsl.Runner) error
 	Verify(ctx context.Context, runner wsl.Runner) error
 }
@@ -48,13 +48,13 @@ func New(runner wsl.Runner) *Recovery {
 
 // Plan returns the repair actions applicable to the given component states,
 // in a stable order.
-func (r *Recovery) Plan(components []*envorkav1.ComponentStatus) []*envorkav1.RepairAction {
-	var out []*envorkav1.RepairAction
+func (r *Recovery) Plan(components []*envorcav1.ComponentStatus) []*envorcav1.RepairAction {
+	var out []*envorcav1.RepairAction
 	for _, a := range r.actions {
 		if !a.CanExecute(components) {
 			continue
 		}
-		out = append(out, &envorkav1.RepairAction{
+		out = append(out, &envorcav1.RepairAction{
 			ComponentId:          a.ComponentID(),
 			ActionId:             a.ID(),
 			Summary:              a.Summary(),
@@ -69,13 +69,13 @@ func (r *Recovery) Plan(components []*envorkav1.ComponentStatus) []*envorkav1.Re
 // Execute runs one action by ID and verifies the result. It returns a
 // non-error only for transport/validation-level failures; action results are
 // reported inside the outcome.
-func (r *Recovery) Execute(ctx context.Context, actionID string, confirmed bool, components []*envorkav1.ComponentStatus) (*envorkav1.RepairOutcome, error) {
+func (r *Recovery) Execute(ctx context.Context, actionID string, confirmed bool, components []*envorcav1.ComponentStatus) (*envorcav1.RepairOutcome, error) {
 	for _, a := range r.actions {
 		if a.ID() != actionID {
 			continue
 		}
 		if !a.CanExecute(components) {
-			return &envorkav1.RepairOutcome{
+			return &envorcav1.RepairOutcome{
 				ActionId:    actionID,
 				ComponentId: a.ComponentID(),
 				Success:     false,
@@ -86,7 +86,7 @@ func (r *Recovery) Execute(ctx context.Context, actionID string, confirmed bool,
 			return nil, errors.New("confirmation required for " + actionID)
 		}
 		result := "ok"
-		outcome := &envorkav1.RepairOutcome{ActionId: actionID, ComponentId: a.ComponentID()}
+		outcome := &envorcav1.RepairOutcome{ActionId: actionID, ComponentId: a.ComponentID()}
 		if err := a.Execute(ctx, r.runner); err != nil {
 			result = "execute failed: " + err.Error()
 			outcome.Success = false
@@ -107,16 +107,16 @@ func (r *Recovery) Execute(ctx context.Context, actionID string, confirmed bool,
 	return nil, fmt.Errorf("unknown repair action %q", actionID)
 }
 
-func wslCritical(components []*envorkav1.ComponentStatus, predicate func(*envorkav1.ComponentStatus) bool) bool {
+func wslCritical(components []*envorcav1.ComponentStatus, predicate func(*envorcav1.ComponentStatus) bool) bool {
 	for _, c := range components {
-		if c.Id == "wsl" && c.Status == envorkav1.Status_CRITICAL && predicate(c) {
+		if c.Id == "wsl" && c.Status == envorcav1.Status_CRITICAL && predicate(c) {
 			return true
 		}
 	}
 	return false
 }
 
-func summaryHas(c *envorkav1.ComponentStatus, keywords ...string) bool {
+func summaryHas(c *envorcav1.ComponentStatus, keywords ...string) bool {
 	s := strings.ToLower(c.Summary)
 	for _, k := range keywords {
 		if strings.Contains(s, k) {
@@ -137,8 +137,8 @@ func (WSLStartAction) Description() string {
 	return "Boots the default Linux distribution. Does not affect user data."
 }
 func (WSLStartAction) RequiresConfirmation() bool { return false }
-func (WSLStartAction) CanExecute(c []*envorkav1.ComponentStatus) bool {
-	return wslCritical(c, func(s *envorkav1.ComponentStatus) bool {
+func (WSLStartAction) CanExecute(c []*envorcav1.ComponentStatus) bool {
+	return wslCritical(c, func(s *envorcav1.ComponentStatus) bool {
 		return summaryHas(s, "failed to start")
 	})
 }
@@ -169,8 +169,8 @@ func (WSLRestartAction) Description() string {
 	return "Stops and restarts the WSL virtual machine. Running distributions are interrupted; no user data is removed."
 }
 func (WSLRestartAction) RequiresConfirmation() bool { return true }
-func (WSLRestartAction) CanExecute(c []*envorkav1.ComponentStatus) bool {
-	return wslCritical(c, func(s *envorkav1.ComponentStatus) bool {
+func (WSLRestartAction) CanExecute(c []*envorcav1.ComponentStatus) bool {
+	return wslCritical(c, func(s *envorcav1.ComponentStatus) bool {
 		return summaryHas(s, "failed to start", "could not query", "broken")
 	})
 }

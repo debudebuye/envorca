@@ -6,9 +6,9 @@ import (
 
 	"github.com/spf13/cobra"
 
-	"envorka.dev/envorka/api/ipc"
-	"envorka.dev/envorka/cli/internal/client"
-	"envorka.dev/envorka/cli/internal/runner"
+	"envorca.dev/envorca/api/ipc"
+	"envorca.dev/envorca/cli/internal/client"
+	"envorca.dev/envorca/cli/internal/runner"
 )
 
 func init() {
@@ -18,13 +18,13 @@ func init() {
 
 var startCmd = &cobra.Command{
 	Use:   "start",
-	Short: "Start the Envorka daemon",
+	Short: "Start the Envorca daemon",
 	RunE: func(cmd *cobra.Command, args []string) error {
 		ctx := cmd.Context()
 		out := cmd.OutOrStdout()
 		endpoint := ipc.DefaultEndpoint(ipc.DefaultStateDir())
 		if client.Probe(ctx, endpoint) {
-			fmt.Fprintln(out, "Envorka daemon is already running.")
+			fmt.Fprintln(out, "Envorca daemon is already running.")
 			return nil
 		}
 		bin, err := runner.FindDaemonBinary()
@@ -43,7 +43,7 @@ var startCmd = &cobra.Command{
 		deadline := time.Now().Add(15 * time.Second)
 		for time.Now().Before(deadline) {
 			if client.Probe(ctx, endpoint) {
-				fmt.Fprintf(out, "Envorka daemon started.\nSocket: %s\n", endpoint)
+				fmt.Fprintf(out, "Envorca daemon started.\nSocket: %s\n", endpoint)
 				return nil
 			}
 			time.Sleep(150 * time.Millisecond)
@@ -54,13 +54,13 @@ var startCmd = &cobra.Command{
 
 var stopCmd = &cobra.Command{
 	Use:   "stop",
-	Short: "Gracefully stop the Envorka daemon",
+	Short: "Gracefully stop the Envorca daemon",
 	RunE: func(cmd *cobra.Command, args []string) error {
 		ctx := cmd.Context()
 		out := cmd.OutOrStdout()
 		endpoint := ipc.DefaultEndpoint(ipc.DefaultStateDir())
 		if !client.Probe(ctx, endpoint) {
-			fmt.Fprintln(out, "Envorka daemon is not running.")
+			fmt.Fprintln(out, "Envorca daemon is not running.")
 			return nil
 		}
 		conn, err := client.Dial(ctx, endpoint)

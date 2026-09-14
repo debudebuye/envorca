@@ -11,13 +11,13 @@ import (
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
 
-	envorkav1 "envorka.dev/envorka/api/gen/go/envorka/v1"
-	"envorka.dev/envorka/api/ipc"
+	envorcav1 "envorca.dev/envorca/api/gen/go/envorca/v1"
+	"envorca.dev/envorca/api/ipc"
 )
 
 // Dial opens a gRPC connection to the daemon over the local IPC endpoint.
 func Dial(ctx context.Context, endpoint string) (*grpc.ClientConn, error) {
-	return grpc.NewClient("passthrough:///envorka",
+	return grpc.NewClient("passthrough:///envorca",
 		grpc.WithContextDialer(func(ctx context.Context, _ string) (net.Conn, error) {
 			return ipc.DialContext(ctx, endpoint)
 		}),
@@ -35,29 +35,29 @@ func Probe(ctx context.Context, endpoint string) bool {
 	defer conn.Close()
 	ctx2, cancel2 := context.WithTimeout(ctx, 2*time.Second)
 	defer cancel2()
-	_, err = envorkav1.NewDaemonClient(conn).Ping(ctx2, &envorkav1.PingRequest{})
+	_, err = envorcav1.NewDaemonClient(conn).Ping(ctx2, &envorcav1.PingRequest{})
 	return err == nil
 }
 
 // GetStatus returns the current environment status.
-func GetStatus(ctx context.Context, conn *grpc.ClientConn, timeout time.Duration) (*envorkav1.EnvironmentStatus, error) {
+func GetStatus(ctx context.Context, conn *grpc.ClientConn, timeout time.Duration) (*envorcav1.EnvironmentStatus, error) {
 	c, cancel := context.WithTimeout(ctx, timeout)
 	defer cancel()
-	return envorkav1.NewDaemonClient(conn).GetStatus(c, &envorkav1.GetStatusRequest{})
+	return envorcav1.NewDaemonClient(conn).GetStatus(c, &envorcav1.GetStatusRequest{})
 }
 
 // GetRepairPlan returns the currently applicable repair actions.
-func GetRepairPlan(ctx context.Context, conn *grpc.ClientConn, timeout time.Duration) (*envorkav1.RepairPlan, error) {
+func GetRepairPlan(ctx context.Context, conn *grpc.ClientConn, timeout time.Duration) (*envorcav1.RepairPlan, error) {
 	c, cancel := context.WithTimeout(ctx, timeout)
 	defer cancel()
-	return envorkav1.NewDaemonClient(conn).GetRepairPlan(c, &envorkav1.GetRepairPlanRequest{})
+	return envorcav1.NewDaemonClient(conn).GetRepairPlan(c, &envorcav1.GetRepairPlanRequest{})
 }
 
 // ExecuteRepair runs one repair action from the plan.
-func ExecuteRepair(ctx context.Context, conn *grpc.ClientConn, actionID string, confirmed bool, timeout time.Duration) (*envorkav1.RepairOutcome, error) {
+func ExecuteRepair(ctx context.Context, conn *grpc.ClientConn, actionID string, confirmed bool, timeout time.Duration) (*envorcav1.RepairOutcome, error) {
 	c, cancel := context.WithTimeout(ctx, timeout)
 	defer cancel()
-	return envorkav1.NewDaemonClient(conn).ExecuteRepair(c, &envorkav1.ExecuteRepairRequest{
+	return envorcav1.NewDaemonClient(conn).ExecuteRepair(c, &envorcav1.ExecuteRepairRequest{
 		ActionId:  actionID,
 		Confirmed: confirmed,
 	})
@@ -67,6 +67,6 @@ func ExecuteRepair(ctx context.Context, conn *grpc.ClientConn, actionID string, 
 func Shutdown(ctx context.Context, conn *grpc.ClientConn, timeout time.Duration) error {
 	c, cancel := context.WithTimeout(ctx, timeout)
 	defer cancel()
-	_, err := envorkav1.NewDaemonClient(conn).Shutdown(c, &envorkav1.ShutdownRequest{})
+	_, err := envorcav1.NewDaemonClient(conn).Shutdown(c, &envorcav1.ShutdownRequest{})
 	return err
 }

@@ -9,23 +9,23 @@ import (
 
 	"golang.org/x/sys/windows"
 
-	envorkav1 "envorka.dev/envorka/api/gen/go/envorka/v1"
-	"envorka.dev/envorka/daemon/internal/health"
-	"envorka.dev/envorka/daemon/internal/wsl"
+	envorcav1 "envorca.dev/envorca/api/gen/go/envorca/v1"
+	"envorca.dev/envorca/daemon/internal/health"
+	"envorca.dev/envorca/daemon/internal/wsl"
 )
 
 func windowsProbe() health.Probe {
-	return func(context.Context) envorkav1.ComponentStatus {
+	return func(context.Context) envorcav1.ComponentStatus {
 		v, err := rtlGetVersion()
 		if err != nil {
-			return envorkav1.ComponentStatus{
-				Status:  envorkav1.Status_CRITICAL,
+			return envorcav1.ComponentStatus{
+				Status:  envorcav1.Status_CRITICAL,
 				Summary: "could not read Windows version",
-				Reason:  "Envorka is a Windows application; a readable OS version is required.",
+				Reason:  "Envorca is a Windows application; a readable OS version is required.",
 			}
 		}
-		return envorkav1.ComponentStatus{
-			Status:  envorkav1.Status_HEALTHY,
+		return envorcav1.ComponentStatus{
+			Status:  envorcav1.Status_HEALTHY,
 			Summary: fmt.Sprintf("Windows %d.%d (build %d)", v.Major, v.Minor, v.Build),
 		}
 	}
@@ -35,21 +35,21 @@ func windowsProbe() health.Probe {
 // V1 it treats a successful WSL2 query as the real signal; dedicated
 // Hyper-V/VirtualMachinePlatform checks land with installer work.
 func virtualizationProbe() health.Probe {
-	return func(ctx context.Context) envorkav1.ComponentStatus {
+	return func(ctx context.Context) envorcav1.ComponentStatus {
 		// `wsl --status` is the fastest reliable proof that the
 		// VirtualMachinePlatform is present and functioning.
 		runner := wsl.DefaultRunner()
 		if _, err := runner(ctx, "--status"); err != nil {
-			return envorkav1.ComponentStatus{
-				Status:         envorkav1.Status_CRITICAL,
+			return envorcav1.ComponentStatus{
+				Status:         envorcav1.Status_CRITICAL,
 				Summary:        "CPU virtualization or Virtual Machine Platform unavailable",
 				Reason:         "WSL2 cannot run without virtualization support enabled in firmware and the VirtualMachinePlatform Windows feature.",
 				Recommendation: "Enable virtualization in BIOS/UEFI and enable the 'Virtual Machine Platform' and 'Windows Subsystem for Linux' features.",
 				SafeToFix:      false,
 			}
 		}
-		return envorkav1.ComponentStatus{
-			Status:  envorkav1.Status_HEALTHY,
+		return envorcav1.ComponentStatus{
+			Status:  envorcav1.Status_HEALTHY,
 			Summary: "CPU virtualization and Virtual Machine Platform available",
 		}
 	}

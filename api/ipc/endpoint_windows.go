@@ -9,15 +9,15 @@ import (
 
 func defaultStateDir() string {
 	if app := os.Getenv("LOCALAPPDATA"); app != "" {
-		return filepath.Join(app, "Envorka")
+		return filepath.Join(app, "Envorca")
 	}
 	home, err := os.UserHomeDir()
 	if err != nil {
-		return filepath.Join(os.TempDir(), "Envorka")
+		return filepath.Join(os.TempDir(), "Envorca")
 	}
-	return filepath.Join(home, "AppData", "Local", "Envorka")
+	return filepath.Join(home, "AppData", "Local", "Envorca")
 }
 
 func platformEndpoint(string) string {
-	return `\\.\pipe\envorka`
+	return `\\.\pipe\envorca`
 }

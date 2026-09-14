@@ -9,9 +9,9 @@ import (
 
 	"github.com/spf13/cobra"
 
-	envorkav1 "envorka.dev/envorka/api/gen/go/envorka/v1"
-	"envorka.dev/envorka/api/ipc"
-	"envorka.dev/envorka/cli/internal/client"
+	envorcav1 "envorca.dev/envorca/api/gen/go/envorca/v1"
+	"envorca.dev/envorca/api/ipc"
+	"envorca.dev/envorca/cli/internal/client"
 )
 
 func init() {
@@ -25,7 +25,7 @@ var statusCmd = &cobra.Command{
 		ctx := cmd.Context()
 		endpoint := ipc.DefaultEndpoint(ipc.DefaultStateDir())
 		if !client.Probe(ctx, endpoint) {
-			return errors.New("Envorka daemon is not running.\nRun 'envorka start' to launch it.")
+			return errors.New("Envorca daemon is not running.\nRun 'envorca start' to launch it.")
 		}
 		conn, err := client.Dial(ctx, endpoint)
 		if err != nil {
@@ -41,9 +41,9 @@ var statusCmd = &cobra.Command{
 	},
 }
 
-func renderStatus(w io.Writer, st *envorkav1.EnvironmentStatus) {
+func renderStatus(w io.Writer, st *envorcav1.EnvironmentStatus) {
 	f := func(format string, a ...any) { fmt.Fprintf(w, format+"\n", a...) }
-	f("ENVORKA DAEMON")
+	f("ENVORCA DAEMON")
 	f("  State:    %s", st.DaemonState)
 	f("  Version:  %s", st.Version)
 	f("  Socket:   %s", st.Socket)
@@ -55,30 +55,30 @@ func renderStatus(w io.Writer, st *envorkav1.EnvironmentStatus) {
 	}
 }
 
-func plainStatus(s envorkav1.Status) string {
+func plainStatus(s envorcav1.Status) string {
 	switch s {
-	case envorkav1.Status_HEALTHY:
+	case envorcav1.Status_HEALTHY:
 		return "HEALTHY"
-	case envorkav1.Status_WARNING:
+	case envorcav1.Status_WARNING:
 		return "WARNING"
-	case envorkav1.Status_CRITICAL:
+	case envorcav1.Status_CRITICAL:
 		return "CRITICAL"
 	default:
 		return "UNKNOWN"
 	}
 }
 
-func decorateStatus(s envorkav1.Status, text string) string {
+func decorateStatus(s envorcav1.Status, text string) string {
 	if !isTerminal() {
 		return text
 	}
 	var color string
 	switch s {
-	case envorkav1.Status_HEALTHY:
+	case envorcav1.Status_HEALTHY:
 		color = "\x1b[32m"
-	case envorkav1.Status_WARNING:
+	case envorcav1.Status_WARNING:
 		color = "\x1b[33m"
-	case envorkav1.Status_CRITICAL:
+	case envorcav1.Status_CRITICAL:
 		color = "\x1b[31m"
 	default:
 		color = "\x1b[36m"

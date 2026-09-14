@@ -1,6 +1,6 @@
 package state
 
-// Package state stores Envorka's own metadata (configuration, projects,
+// Package state stores Envorca's own metadata (configuration, projects,
 // diagnostics and repair history) in SQLite. Container runtime state is never
 // duplicated here; the runtime remains the source of truth.
 

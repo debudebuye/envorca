@@ -15,23 +15,23 @@ import (
 	"google.golang.org/grpc/credentials/insecure"
 	"google.golang.org/grpc/status"
 
-	envorkav1 "envorka.dev/envorka/api/gen/go/envorka/v1"
-	"envorka.dev/envorka/api/ipc"
-	daemonapi "envorka.dev/envorka/daemon/internal/api"
-	"envorka.dev/envorka/daemon/internal/events"
-	"envorka.dev/envorka/daemon/internal/health"
-	"envorka.dev/envorka/daemon/internal/recovery"
-	"envorka.dev/envorka/daemon/internal/wsl"
+	envorcav1 "envorca.dev/envorca/api/gen/go/envorca/v1"
+	"envorca.dev/envorca/api/ipc"
+	daemonapi "envorca.dev/envorca/daemon/internal/api"
+	"envorca.dev/envorca/daemon/internal/events"
+	"envorca.dev/envorca/daemon/internal/health"
+	"envorca.dev/envorca/daemon/internal/recovery"
+	"envorca.dev/envorca/daemon/internal/wsl"
 )
 
 type harness struct {
-	client       envorkav1.DaemonClient
+	client       envorcav1.DaemonClient
 	setWSLCritical func(bool)
 }
 
 func startTestDaemon(t *testing.T) *harness {
 	t.Helper()
-	ep := filepath.Join(t.TempDir(), "envorka.sock")
+	ep := filepath.Join(t.TempDir(), "envorca.sock")
 	ln, err := ipc.Listen(ep)
 	if err != nil {
 		t.Fatal(err)
@@ -42,32 +42,32 @@ func startTestDaemon(t *testing.T) *harness {
 	wslCritical := false
 	runner := fakeRunner()
 	reg := health.NewRegistry()
-	if err := reg.Register("daemon", func(context.Context) envorkav1.ComponentStatus {
-		return envorkav1.ComponentStatus{Status: envorkav1.Status_HEALTHY, Summary: "ok"}
+	if err := reg.Register("daemon", func(context.Context) envorcav1.ComponentStatus {
+		return envorcav1.ComponentStatus{Status: envorcav1.Status_HEALTHY, Summary: "ok"}
 	}); err != nil {
 		t.Fatal(err)
 	}
-	if err := reg.Register("wsl", func(context.Context) envorkav1.ComponentStatus {
+	if err := reg.Register("wsl", func(context.Context) envorcav1.ComponentStatus {
 		if wslCritical {
-			return envorkav1.ComponentStatus{
-				Status:         envorkav1.Status_CRITICAL,
+			return envorcav1.ComponentStatus{
+				Status:         envorcav1.Status_CRITICAL,
 				Summary:        "Linux environment failed to start",
 				Recommendation: "Restart the WSL environment.",
 				SafeToFix:      true,
 			}
 		}
-		return envorkav1.ComponentStatus{Status: envorkav1.Status_HEALTHY, Summary: "WSL2 ready"}
+		return envorcav1.ComponentStatus{Status: envorcav1.Status_HEALTHY, Summary: "WSL2 ready"}
 	}); err != nil {
 		t.Fatal(err)
 	}
 	logger := slog.New(slog.NewTextHandler(io.Discard, nil))
 	d := daemonapi.New(logger, events.New(16), reg, recovery.New(runner), ep, cancel)
-	envorkav1.RegisterDaemonServer(grpcServer, d)
+	envorcav1.RegisterDaemonServer(grpcServer, d)
 
 	go func() { grpcServer.Serve(ln) }()
 	t.Cleanup(grpcServer.Stop)
 
-	conn, err := grpc.NewClient("passthrough:///envorka",
+	conn, err := grpc.NewClient("passthrough:///envorca",
 		grpc.WithContextDialer(func(ctx context.Context, _ string) (net.Conn, error) {
 			return ipc.DialContext(ctx, ep)
 		}),
@@ -77,9 +77,9 @@ func startTestDaemon(t *testing.T) *harness {
 	}
 	t.Cleanup(func() { conn.Close() })
 
-	client := envorkav1.NewDaemonClient(conn)
+	client := envorcav1.NewDaemonClient(conn)
 	for i := 0; i < 20; i++ {
-		if _, err = client.GetStatus(ctx, &envorkav1.GetStatusRequest{}); err == nil {
+		if _, err = client.GetStatus(ctx, &envorcav1.GetStatusRequest{}); err == nil {
 			return &harness{client: client, setWSLCritical: func(b bool) { wslCritical = b }}
 		}
 		time.Sleep(100 * time.Millisecond)
@@ -94,7 +94,7 @@ func fakeRunner() wsl.Runner {
 		case "--list --verbose":
 			return []byte("  NAME            STATE     VERSION\n* Ubuntu-24.04  Running   2\n"), nil
 		default:
-			return []byte("envorka:boot"), nil
+			return []byte("envorca:boot"), nil
 		}
 	}
 }
@@ -103,7 +103,7 @@ func TestPingAndGetStatus(t *testing.T) {
 	h := startTestDaemon(t)
 	ctx := context.Background()
 
-	resp, err := h.client.Ping(ctx, &envorkav1.PingRequest{})
+	resp, err := h.client.Ping(ctx, &envorcav1.PingRequest{})
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -111,20 +111,20 @@ func TestPingAndGetStatus(t *testing.T) {
 		t.Error("empty version")
 	}
 
-	st, err := h.client.GetStatus(ctx, &envorkav1.GetStatusRequest{})
+	st, err := h.client.GetStatus(ctx, &envorcav1.GetStatusRequest{})
 	if err != nil {
 		t.Fatal(err)
 	}
 	if st.DaemonState != "running" {
 		t.Errorf("daemon state = %q, want running", st.DaemonState)
 	}
-	if st.OverallStatus != envorkav1.Status_HEALTHY {
+	if st.OverallStatus != envorcav1.Status_HEALTHY {
 		t.Errorf("overall = %s, want HEALTHY", st.OverallStatus)
 	}
 	if len(st.Components) != 2 {
 		t.Fatalf("components = %d, want 2", len(st.Components))
 	}
-	if st.Components[0].Id != "daemon" || st.Components[0].Status != envorkav1.Status_HEALTHY {
+	if st.Components[0].Id != "daemon" || st.Components[0].Status != envorcav1.Status_HEALTHY {
 		t.Errorf("daemon component = %+v", st.Components[0])
 	}
 	if st.UptimeSeconds < 0 {
@@ -137,7 +137,7 @@ func TestRepairPlanRoundTrip(t *testing.T) {
 	ctx := context.Background()
 
 	h.setWSLCritical(true)
-	plan, err := h.client.GetRepairPlan(ctx, &envorkav1.GetRepairPlanRequest{})
+	plan, err := h.client.GetRepairPlan(ctx, &envorcav1.GetRepairPlanRequest{})
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -154,7 +154,7 @@ func TestRepairPlanRoundTrip(t *testing.T) {
 		t.Error("plan should carry an RFC3339 evaluation timestamp")
 	}
 
-	outcome, err := h.client.ExecuteRepair(ctx, &envorkav1.ExecuteRepairRequest{ActionId: "wsl.start"})
+	outcome, err := h.client.ExecuteRepair(ctx, &envorcav1.ExecuteRepairRequest{ActionId: "wsl.start"})
 	if err != nil {
 		t.Fatalf("ExecuteRepair wsl.start: %v", err)
 	}
@@ -162,7 +162,7 @@ func TestRepairPlanRoundTrip(t *testing.T) {
 		t.Fatalf("wsl.start outcome = %+v, want success", outcome)
 	}
 
-	outcome, err = h.client.ExecuteRepair(ctx, &envorkav1.ExecuteRepairRequest{ActionId: "wsl.restart"})
+	outcome, err = h.client.ExecuteRepair(ctx, &envorcav1.ExecuteRepairRequest{ActionId: "wsl.restart"})
 	if err == nil {
 		t.Fatalf("wsl.restart without confirmation should fail, got %+v", outcome)
 	}
@@ -170,7 +170,7 @@ func TestRepairPlanRoundTrip(t *testing.T) {
 		t.Errorf("wsl.restart err code = %v, want FailedPrecondition", status.Code(err))
 	}
 
-	outcome, err = h.client.ExecuteRepair(ctx, &envorkav1.ExecuteRepairRequest{ActionId: "wsl.restart", Confirmed: true})
+	outcome, err = h.client.ExecuteRepair(ctx, &envorcav1.ExecuteRepairRequest{ActionId: "wsl.restart", Confirmed: true})
 	if err != nil {
 		t.Fatalf("ExecuteRepair wsl.restart confirmed: %v", err)
 	}
@@ -181,7 +181,7 @@ func TestRepairPlanRoundTrip(t *testing.T) {
 
 func TestRepairPlanEmptyWhenHealthy(t *testing.T) {
 	h := startTestDaemon(t)
-	plan, err := h.client.GetRepairPlan(context.Background(), &envorkav1.GetRepairPlanRequest{})
+	plan, err := h.client.GetRepairPlan(context.Background(), &envorcav1.GetRepairPlanRequest{})
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -193,11 +193,11 @@ func TestRepairPlanEmptyWhenHealthy(t *testing.T) {
 func TestGetStatusReflectsCriticalOverall(t *testing.T) {
 	h := startTestDaemon(t)
 	h.setWSLCritical(true)
-	st, err := h.client.GetStatus(context.Background(), &envorkav1.GetStatusRequest{})
+	st, err := h.client.GetStatus(context.Background(), &envorcav1.GetStatusRequest{})
 	if err != nil {
 		t.Fatal(err)
 	}
-	if st.OverallStatus != envorkav1.Status_CRITICAL {
+	if st.OverallStatus != envorcav1.Status_CRITICAL {
 		t.Errorf("overall = %s, want CRITICAL", st.OverallStatus)
 	}
 	if st.Components[1].Id != "wsl" || st.Components[1].SafeToFix != true {

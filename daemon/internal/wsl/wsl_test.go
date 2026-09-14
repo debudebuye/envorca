@@ -150,7 +150,7 @@ func TestBootSuccess(t *testing.T) {
 		if !strings.Contains(strings.Join(args, " "), "Ubuntu-22.04") {
 			return nil, errors.New("wrong args")
 		}
-		return []byte("envorka:boot\n"), nil
+		return []byte("envorca:boot\n"), nil
 	}
 	if err := Boot(context.Background(), run, "Ubuntu-22.04"); err != nil {
 		t.Error(err)

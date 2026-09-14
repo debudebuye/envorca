@@ -2,9 +2,9 @@
 // versions:
 // - protoc-gen-go-grpc v1.6.2
 // - protoc             v7.36.1
-// source: envorka/v1/envorka.proto
+// source: envorca/v1/envorca.proto
 
-package envorkav1
+package envorcav1
 
 import (
 	context "context"
@@ -19,18 +19,18 @@ import (
 const _ = grpc.SupportPackageIsVersion9
 
 const (
-	Daemon_Ping_FullMethodName          = "/envorka.v1.Daemon/Ping"
-	Daemon_GetStatus_FullMethodName     = "/envorka.v1.Daemon/GetStatus"
-	Daemon_GetRepairPlan_FullMethodName = "/envorka.v1.Daemon/GetRepairPlan"
-	Daemon_ExecuteRepair_FullMethodName = "/envorka.v1.Daemon/ExecuteRepair"
-	Daemon_Shutdown_FullMethodName      = "/envorka.v1.Daemon/Shutdown"
+	Daemon_Ping_FullMethodName          = "/envorca.v1.Daemon/Ping"
+	Daemon_GetStatus_FullMethodName     = "/envorca.v1.Daemon/GetStatus"
+	Daemon_GetRepairPlan_FullMethodName = "/envorca.v1.Daemon/GetRepairPlan"
+	Daemon_ExecuteRepair_FullMethodName = "/envorca.v1.Daemon/ExecuteRepair"
+	Daemon_Shutdown_FullMethodName      = "/envorca.v1.Daemon/Shutdown"
 )
 
 // DaemonClient is the client API for Daemon service.
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 //
-// Daemon is the single Envorka service. It is the only owner of
+// Daemon is the single Envorca service. It is the only owner of
 // infrastructure state and logic; CLI and desktop are thin clients.
 type DaemonClient interface {
 	// Ping returns daemon identity and liveness.
@@ -108,7 +108,7 @@ func (c *daemonClient) Shutdown(ctx context.Context, in *ShutdownRequest, opts .
 // All implementations must embed UnimplementedDaemonServer
 // for forward compatibility.
 //
-// Daemon is the single Envorka service. It is the only owner of
+// Daemon is the single Envorca service. It is the only owner of
 // infrastructure state and logic; CLI and desktop are thin clients.
 type DaemonServer interface {
 	// Ping returns daemon identity and liveness.
@@ -262,7 +262,7 @@ func _Daemon_Shutdown_Handler(srv interface{}, ctx context.Context, dec func(int
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
 var Daemon_ServiceDesc = grpc.ServiceDesc{
-	ServiceName: "envorka.v1.Daemon",
+	ServiceName: "envorca.v1.Daemon",
 	HandlerType: (*DaemonServer)(nil),
 	Methods: []grpc.MethodDesc{
 		{
@@ -287,5 +287,5 @@ var Daemon_ServiceDesc = grpc.ServiceDesc{
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
-	Metadata: "envorka/v1/envorka.proto",
+	Metadata: "envorca/v1/envorca.proto",
 }

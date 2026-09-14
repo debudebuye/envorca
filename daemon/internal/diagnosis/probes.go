@@ -2,7 +2,7 @@ package diagnosis
 
 // Package diagnosis wires the health component probes for the daemon. Each
 // probe returns a ComponentStatus that explains what is wrong, why it
-// matters, what Envorka recommends, and whether it can safely fix it.
+// matters, what Envorca recommends, and whether it can safely fix it.
 
 import (
 	"context"
@@ -10,10 +10,10 @@ import (
 	"strings"
 	"time"
 
-	envorkav1 "envorka.dev/envorka/api/gen/go/envorka/v1"
-	"envorka.dev/envorka/daemon/internal/health"
-	"envorka.dev/envorka/daemon/internal/system"
-	"envorka.dev/envorka/daemon/internal/wsl"
+	envorcav1 "envorca.dev/envorca/api/gen/go/envorca/v1"
+	"envorca.dev/envorca/daemon/internal/health"
+	"envorca.dev/envorca/daemon/internal/system"
+	"envorca.dev/envorca/daemon/internal/wsl"
 )
 
 // Options configure the default registry.
@@ -56,26 +56,26 @@ func Registry(opts Options) (*health.Registry, error) {
 }
 
 func daemonProbe() health.Probe {
-	return func(context.Context) envorkav1.ComponentStatus {
-		return envorkav1.ComponentStatus{Status: envorkav1.Status_HEALTHY, Summary: "daemon running"}
+	return func(context.Context) envorcav1.ComponentStatus {
+		return envorcav1.ComponentStatus{Status: envorcav1.Status_HEALTHY, Summary: "daemon running"}
 	}
 }
 
 func wslProbe(runner wsl.Runner) health.Probe {
-	return func(ctx context.Context) envorkav1.ComponentStatus {
+	return func(ctx context.Context) envorcav1.ComponentStatus {
 		if !wsl.Available() {
-			return envorkav1.ComponentStatus{
-				Status:         envorkav1.Status_CRITICAL,
+			return envorcav1.ComponentStatus{
+				Status:         envorcav1.Status_CRITICAL,
 				Summary:        "WSL is not installed",
-				Reason:         "Envorka requires WSL2 to run Linux containers.",
+				Reason:         "Envorca requires WSL2 to run Linux containers.",
 				Recommendation: "Enable WSL2 (optional Windows component); on Windows 11 run `wsl --install`.",
 				SafeToFix:      false,
 			}
 		}
 		distro, err := wsl.DefaultDistro(ctx, runner)
 		if err != nil {
-			return envorkav1.ComponentStatus{
-				Status:         envorkav1.Status_CRITICAL,
+			return envorcav1.ComponentStatus{
+				Status:         envorcav1.Status_CRITICAL,
 				Summary:        "could not query WSL status",
 				Reason:         "WSL is broken or the Virtual Machine Platform is unavailable.",
 				Recommendation: "Restart the WSL environment or repair Windows virtualization.",
@@ -83,8 +83,8 @@ func wslProbe(runner wsl.Runner) health.Probe {
 			}
 		}
 		if distro == "" {
-			return envorkav1.ComponentStatus{
-				Status:         envorkav1.Status_WARNING,
+			return envorcav1.ComponentStatus{
+				Status:         envorcav1.Status_WARNING,
 				Summary:        "no default Linux distribution",
 				Reason:         "Containers need a Linux distribution to run in.",
 				Recommendation: "Install a distribution (e.g. `wsl --install -d Ubuntu`).",
@@ -92,8 +92,8 @@ func wslProbe(runner wsl.Runner) health.Probe {
 			}
 		}
 		if err := wsl.Boot(ctx, runner, distro); err != nil {
-			return envorkav1.ComponentStatus{
-				Status:               envorkav1.Status_CRITICAL,
+			return envorcav1.ComponentStatus{
+				Status:               envorcav1.Status_CRITICAL,
 				Summary:              "Linux environment failed to start",
 				Reason:               "Containers cannot start while the WSL environment is broken.",
 				Recommendation:       "Restart the WSL environment.",
@@ -114,44 +114,44 @@ func wslProbe(runner wsl.Runner) health.Probe {
 				}
 			}
 		}
-		return envorkav1.ComponentStatus{Status: envorkav1.Status_HEALTHY, Summary: summary}
+		return envorcav1.ComponentStatus{Status: envorcav1.Status_HEALTHY, Summary: summary}
 	}
 }
 
 func kernelProbe(runner wsl.Runner) health.Probe {
-	return func(ctx context.Context) envorkav1.ComponentStatus {
+	return func(ctx context.Context) envorcav1.ComponentStatus {
 		if !wsl.Available() {
-			return envorkav1.ComponentStatus{Status: envorkav1.Status_UNKNOWN, Summary: "WSL not installed; kernel probe skipped"}
+			return envorcav1.ComponentStatus{Status: envorcav1.Status_UNKNOWN, Summary: "WSL not installed; kernel probe skipped"}
 		}
 		kv, err := wsl.KernelVersion(ctx, runner)
 		if err != nil || kv == "" {
-			return envorkav1.ComponentStatus{
-				Status:  envorkav1.Status_UNKNOWN,
+			return envorcav1.ComponentStatus{
+				Status:  envorcav1.Status_UNKNOWN,
 				Summary: "kernel version unavailable",
 			}
 		}
-		return envorkav1.ComponentStatus{Status: envorkav1.Status_HEALTHY, Summary: kv}
+		return envorcav1.ComponentStatus{Status: envorcav1.Status_HEALTHY, Summary: kv}
 	}
 }
 
 func resourcesProbe() health.Probe {
-	return func(ctx context.Context) envorkav1.ComponentStatus {
+	return func(ctx context.Context) envorcav1.ComponentStatus {
 		res, err := system.Memory()
 		if err != nil {
-			return envorkav1.ComponentStatus{
-				Status:  envorkav1.Status_UNKNOWN,
+			return envorcav1.ComponentStatus{
+				Status:  envorcav1.Status_UNKNOWN,
 				Summary: "memory probe failed: " + err.Error(),
 			}
 		}
 		if res.TotalMemoryBytes == 0 {
-			return envorkav1.ComponentStatus{Status: envorkav1.Status_UNKNOWN, Summary: "memory probe unavailable"}
+			return envorcav1.ComponentStatus{Status: envorcav1.Status_UNKNOWN, Summary: "memory probe unavailable"}
 		}
 		var b strings.Builder
 		fmt.Fprintf(&b, "memory: %.1f GB installed", gb(res.TotalMemoryBytes))
 		if res.AvailableMemoryBytes > 0 {
 			fmt.Fprintf(&b, ", %.1f GB available", gb(res.AvailableMemoryBytes))
 		}
-		return envorkav1.ComponentStatus{Status: envorkav1.Status_HEALTHY, Summary: b.String()}
+		return envorcav1.ComponentStatus{Status: envorcav1.Status_HEALTHY, Summary: b.String()}
 	}
 }
 

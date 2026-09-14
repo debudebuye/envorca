@@ -2,9 +2,9 @@
 // versions:
 // 	protoc-gen-go v1.36.12
 // 	protoc        v7.36.1
-// source: envorka/v1/envorka.proto
+// source: envorca/v1/envorca.proto
 
-package envorkav1
+package envorcav1
 
 import (
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
@@ -60,11 +60,11 @@ func (x Status) String() string {
 }
 
 func (Status) Descriptor() protoreflect.EnumDescriptor {
-	return file_envorka_v1_envorka_proto_enumTypes[0].Descriptor()
+	return file_envorca_v1_envorca_proto_enumTypes[0].Descriptor()
 }
 
 func (Status) Type() protoreflect.EnumType {
-	return &file_envorka_v1_envorka_proto_enumTypes[0]
+	return &file_envorca_v1_envorca_proto_enumTypes[0]
 }
 
 func (x Status) Number() protoreflect.EnumNumber {
@@ -73,7 +73,7 @@ func (x Status) Number() protoreflect.EnumNumber {
 
 // Deprecated: Use Status.Descriptor instead.
 func (Status) EnumDescriptor() ([]byte, []int) {
-	return file_envorka_v1_envorka_proto_rawDescGZIP(), []int{0}
+	return file_envorca_v1_envorca_proto_rawDescGZIP(), []int{0}
 }
 
 type PingRequest struct {
@@ -84,7 +84,7 @@ type PingRequest struct {
 
 func (x *PingRequest) Reset() {
 	*x = PingRequest{}
-	mi := &file_envorka_v1_envorka_proto_msgTypes[0]
+	mi := &file_envorca_v1_envorca_proto_msgTypes[0]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -96,7 +96,7 @@ func (x *PingRequest) String() string {
 func (*PingRequest) ProtoMessage() {}
 
 func (x *PingRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_envorka_v1_envorka_proto_msgTypes[0]
+	mi := &file_envorca_v1_envorca_proto_msgTypes[0]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -109,7 +109,7 @@ func (x *PingRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use PingRequest.ProtoReflect.Descriptor instead.
 func (*PingRequest) Descriptor() ([]byte, []int) {
-	return file_envorka_v1_envorka_proto_rawDescGZIP(), []int{0}
+	return file_envorca_v1_envorca_proto_rawDescGZIP(), []int{0}
 }
 
 type PingResponse struct {
@@ -124,7 +124,7 @@ type PingResponse struct {
 
 func (x *PingResponse) Reset() {
 	*x = PingResponse{}
-	mi := &file_envorka_v1_envorka_proto_msgTypes[1]
+	mi := &file_envorca_v1_envorca_proto_msgTypes[1]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -136,7 +136,7 @@ func (x *PingResponse) String() string {
 func (*PingResponse) ProtoMessage() {}
 
 func (x *PingResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_envorka_v1_envorka_proto_msgTypes[1]
+	mi := &file_envorca_v1_envorca_proto_msgTypes[1]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -149,7 +149,7 @@ func (x *PingResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use PingResponse.ProtoReflect.Descriptor instead.
 func (*PingResponse) Descriptor() ([]byte, []int) {
-	return file_envorka_v1_envorka_proto_rawDescGZIP(), []int{1}
+	return file_envorca_v1_envorca_proto_rawDescGZIP(), []int{1}
 }
 
 func (x *PingResponse) GetVersion() string {
@@ -183,7 +183,7 @@ func (x *PingResponse) GetSocket() string {
 type ComponentStatus struct {
 	state                protoimpl.MessageState `protogen:"open.v1"`
 	Id                   string                 `protobuf:"bytes,1,opt,name=id,proto3" json:"id,omitempty"`
-	Status               Status                 `protobuf:"varint,2,opt,name=status,proto3,enum=envorka.v1.Status" json:"status,omitempty"`
+	Status               Status                 `protobuf:"varint,2,opt,name=status,proto3,enum=envorca.v1.Status" json:"status,omitempty"`
 	Summary              string                 `protobuf:"bytes,3,opt,name=summary,proto3" json:"summary,omitempty"`
 	Reason               string                 `protobuf:"bytes,4,opt,name=reason,proto3" json:"reason,omitempty"`
 	Recommendation       string                 `protobuf:"bytes,5,opt,name=recommendation,proto3" json:"recommendation,omitempty"`
@@ -195,7 +195,7 @@ type ComponentStatus struct {
 
 func (x *ComponentStatus) Reset() {
 	*x = ComponentStatus{}
-	mi := &file_envorka_v1_envorka_proto_msgTypes[2]
+	mi := &file_envorca_v1_envorca_proto_msgTypes[2]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -207,7 +207,7 @@ func (x *ComponentStatus) String() string {
 func (*ComponentStatus) ProtoMessage() {}
 
 func (x *ComponentStatus) ProtoReflect() protoreflect.Message {
-	mi := &file_envorka_v1_envorka_proto_msgTypes[2]
+	mi := &file_envorca_v1_envorca_proto_msgTypes[2]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -220,7 +220,7 @@ func (x *ComponentStatus) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ComponentStatus.ProtoReflect.Descriptor instead.
 func (*ComponentStatus) Descriptor() ([]byte, []int) {
-	return file_envorka_v1_envorka_proto_rawDescGZIP(), []int{2}
+	return file_envorca_v1_envorca_proto_rawDescGZIP(), []int{2}
 }
 
 func (x *ComponentStatus) GetId() string {
@@ -280,7 +280,7 @@ type GetStatusRequest struct {
 
 func (x *GetStatusRequest) Reset() {
 	*x = GetStatusRequest{}
-	mi := &file_envorka_v1_envorka_proto_msgTypes[3]
+	mi := &file_envorca_v1_envorca_proto_msgTypes[3]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -292,7 +292,7 @@ func (x *GetStatusRequest) String() string {
 func (*GetStatusRequest) ProtoMessage() {}
 
 func (x *GetStatusRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_envorka_v1_envorka_proto_msgTypes[3]
+	mi := &file_envorca_v1_envorca_proto_msgTypes[3]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -305,7 +305,7 @@ func (x *GetStatusRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GetStatusRequest.ProtoReflect.Descriptor instead.
 func (*GetStatusRequest) Descriptor() ([]byte, []int) {
-	return file_envorka_v1_envorka_proto_rawDescGZIP(), []int{3}
+	return file_envorca_v1_envorca_proto_rawDescGZIP(), []int{3}
 }
 
 type EnvironmentStatus struct {
@@ -314,7 +314,7 @@ type EnvironmentStatus struct {
 	DaemonState   string                 `protobuf:"bytes,2,opt,name=daemon_state,json=daemonState,proto3" json:"daemon_state,omitempty"`
 	UptimeSeconds int64                  `protobuf:"varint,3,opt,name=uptime_seconds,json=uptimeSeconds,proto3" json:"uptime_seconds,omitempty"`
 	Socket        string                 `protobuf:"bytes,4,opt,name=socket,proto3" json:"socket,omitempty"`
-	OverallStatus Status                 `protobuf:"varint,5,opt,name=overall_status,json=overallStatus,proto3,enum=envorka.v1.Status" json:"overall_status,omitempty"`
+	OverallStatus Status                 `protobuf:"varint,5,opt,name=overall_status,json=overallStatus,proto3,enum=envorca.v1.Status" json:"overall_status,omitempty"`
 	Components    []*ComponentStatus     `protobuf:"bytes,6,rep,name=components,proto3" json:"components,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
@@ -322,7 +322,7 @@ type EnvironmentStatus struct {
 
 func (x *EnvironmentStatus) Reset() {
 	*x = EnvironmentStatus{}
-	mi := &file_envorka_v1_envorka_proto_msgTypes[4]
+	mi := &file_envorca_v1_envorca_proto_msgTypes[4]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -334,7 +334,7 @@ func (x *EnvironmentStatus) String() string {
 func (*EnvironmentStatus) ProtoMessage() {}
 
 func (x *EnvironmentStatus) ProtoReflect() protoreflect.Message {
-	mi := &file_envorka_v1_envorka_proto_msgTypes[4]
+	mi := &file_envorca_v1_envorca_proto_msgTypes[4]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -347,7 +347,7 @@ func (x *EnvironmentStatus) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use EnvironmentStatus.ProtoReflect.Descriptor instead.
 func (*EnvironmentStatus) Descriptor() ([]byte, []int) {
-	return file_envorka_v1_envorka_proto_rawDescGZIP(), []int{4}
+	return file_envorca_v1_envorca_proto_rawDescGZIP(), []int{4}
 }
 
 func (x *EnvironmentStatus) GetVersion() string {
@@ -400,7 +400,7 @@ type GetRepairPlanRequest struct {
 
 func (x *GetRepairPlanRequest) Reset() {
 	*x = GetRepairPlanRequest{}
-	mi := &file_envorka_v1_envorka_proto_msgTypes[5]
+	mi := &file_envorca_v1_envorca_proto_msgTypes[5]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -412,7 +412,7 @@ func (x *GetRepairPlanRequest) String() string {
 func (*GetRepairPlanRequest) ProtoMessage() {}
 
 func (x *GetRepairPlanRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_envorka_v1_envorka_proto_msgTypes[5]
+	mi := &file_envorca_v1_envorca_proto_msgTypes[5]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -425,7 +425,7 @@ func (x *GetRepairPlanRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GetRepairPlanRequest.ProtoReflect.Descriptor instead.
 func (*GetRepairPlanRequest) Descriptor() ([]byte, []int) {
-	return file_envorka_v1_envorka_proto_rawDescGZIP(), []int{5}
+	return file_envorca_v1_envorca_proto_rawDescGZIP(), []int{5}
 }
 
 type RepairAction struct {
@@ -442,7 +442,7 @@ type RepairAction struct {
 
 func (x *RepairAction) Reset() {
 	*x = RepairAction{}
-	mi := &file_envorka_v1_envorka_proto_msgTypes[6]
+	mi := &file_envorca_v1_envorca_proto_msgTypes[6]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -454,7 +454,7 @@ func (x *RepairAction) String() string {
 func (*RepairAction) ProtoMessage() {}
 
 func (x *RepairAction) ProtoReflect() protoreflect.Message {
-	mi := &file_envorka_v1_envorka_proto_msgTypes[6]
+	mi := &file_envorca_v1_envorca_proto_msgTypes[6]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -467,7 +467,7 @@ func (x *RepairAction) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use RepairAction.ProtoReflect.Descriptor instead.
 func (*RepairAction) Descriptor() ([]byte, []int) {
-	return file_envorka_v1_envorka_proto_rawDescGZIP(), []int{6}
+	return file_envorca_v1_envorca_proto_rawDescGZIP(), []int{6}
 }
 
 func (x *RepairAction) GetComponentId() string {
@@ -522,7 +522,7 @@ type RepairPlan struct {
 
 func (x *RepairPlan) Reset() {
 	*x = RepairPlan{}
-	mi := &file_envorka_v1_envorka_proto_msgTypes[7]
+	mi := &file_envorca_v1_envorca_proto_msgTypes[7]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -534,7 +534,7 @@ func (x *RepairPlan) String() string {
 func (*RepairPlan) ProtoMessage() {}
 
 func (x *RepairPlan) ProtoReflect() protoreflect.Message {
-	mi := &file_envorka_v1_envorka_proto_msgTypes[7]
+	mi := &file_envorca_v1_envorca_proto_msgTypes[7]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -547,7 +547,7 @@ func (x *RepairPlan) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use RepairPlan.ProtoReflect.Descriptor instead.
 func (*RepairPlan) Descriptor() ([]byte, []int) {
-	return file_envorka_v1_envorka_proto_rawDescGZIP(), []int{7}
+	return file_envorca_v1_envorca_proto_rawDescGZIP(), []int{7}
 }
 
 func (x *RepairPlan) GetActions() []*RepairAction {
@@ -574,7 +574,7 @@ type ExecuteRepairRequest struct {
 
 func (x *ExecuteRepairRequest) Reset() {
 	*x = ExecuteRepairRequest{}
-	mi := &file_envorka_v1_envorka_proto_msgTypes[8]
+	mi := &file_envorca_v1_envorca_proto_msgTypes[8]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -586,7 +586,7 @@ func (x *ExecuteRepairRequest) String() string {
 func (*ExecuteRepairRequest) ProtoMessage() {}
 
 func (x *ExecuteRepairRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_envorka_v1_envorka_proto_msgTypes[8]
+	mi := &file_envorca_v1_envorca_proto_msgTypes[8]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -599,7 +599,7 @@ func (x *ExecuteRepairRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ExecuteRepairRequest.ProtoReflect.Descriptor instead.
 func (*ExecuteRepairRequest) Descriptor() ([]byte, []int) {
-	return file_envorka_v1_envorka_proto_rawDescGZIP(), []int{8}
+	return file_envorca_v1_envorca_proto_rawDescGZIP(), []int{8}
 }
 
 func (x *ExecuteRepairRequest) GetActionId() string {
@@ -629,7 +629,7 @@ type RepairOutcome struct {
 
 func (x *RepairOutcome) Reset() {
 	*x = RepairOutcome{}
-	mi := &file_envorka_v1_envorka_proto_msgTypes[9]
+	mi := &file_envorca_v1_envorca_proto_msgTypes[9]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -641,7 +641,7 @@ func (x *RepairOutcome) String() string {
 func (*RepairOutcome) ProtoMessage() {}
 
 func (x *RepairOutcome) ProtoReflect() protoreflect.Message {
-	mi := &file_envorka_v1_envorka_proto_msgTypes[9]
+	mi := &file_envorca_v1_envorca_proto_msgTypes[9]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -654,7 +654,7 @@ func (x *RepairOutcome) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use RepairOutcome.ProtoReflect.Descriptor instead.
 func (*RepairOutcome) Descriptor() ([]byte, []int) {
-	return file_envorka_v1_envorka_proto_rawDescGZIP(), []int{9}
+	return file_envorca_v1_envorca_proto_rawDescGZIP(), []int{9}
 }
 
 func (x *RepairOutcome) GetActionId() string {
@@ -700,7 +700,7 @@ type ShutdownRequest struct {
 
 func (x *ShutdownRequest) Reset() {
 	*x = ShutdownRequest{}
-	mi := &file_envorka_v1_envorka_proto_msgTypes[10]
+	mi := &file_envorca_v1_envorca_proto_msgTypes[10]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -712,7 +712,7 @@ func (x *ShutdownRequest) String() string {
 func (*ShutdownRequest) ProtoMessage() {}
 
 func (x *ShutdownRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_envorka_v1_envorka_proto_msgTypes[10]
+	mi := &file_envorca_v1_envorca_proto_msgTypes[10]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -725,7 +725,7 @@ func (x *ShutdownRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ShutdownRequest.ProtoReflect.Descriptor instead.
 func (*ShutdownRequest) Descriptor() ([]byte, []int) {
-	return file_envorka_v1_envorka_proto_rawDescGZIP(), []int{10}
+	return file_envorca_v1_envorca_proto_rawDescGZIP(), []int{10}
 }
 
 type ShutdownResponse struct {
@@ -736,7 +736,7 @@ type ShutdownResponse struct {
 
 func (x *ShutdownResponse) Reset() {
 	*x = ShutdownResponse{}
-	mi := &file_envorka_v1_envorka_proto_msgTypes[11]
+	mi := &file_envorca_v1_envorca_proto_msgTypes[11]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -748,7 +748,7 @@ func (x *ShutdownResponse) String() string {
 func (*ShutdownResponse) ProtoMessage() {}
 
 func (x *ShutdownResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_envorka_v1_envorka_proto_msgTypes[11]
+	mi := &file_envorca_v1_envorca_proto_msgTypes[11]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -761,15 +761,15 @@ func (x *ShutdownResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ShutdownResponse.ProtoReflect.Descriptor instead.
 func (*ShutdownResponse) Descriptor() ([]byte, []int) {
-	return file_envorka_v1_envorka_proto_rawDescGZIP(), []int{11}
+	return file_envorca_v1_envorca_proto_rawDescGZIP(), []int{11}
 }
 
-var File_envorka_v1_envorka_proto protoreflect.FileDescriptor
+var File_envorca_v1_envorca_proto protoreflect.FileDescriptor
 
-const file_envorka_v1_envorka_proto_rawDesc = "" +
+const file_envorca_v1_envorca_proto_rawDesc = "" +
 	"\n" +
-	"\x18envorka/v1/envorka.proto\x12\n" +
-	"envorka.v1\"\r\n" +
+	"\x18envorca/v1/envorca.proto\x12\n" +
+	"envorca.v1\"\r\n" +
 	"\vPingRequest\"\x8a\x01\n" +
 	"\fPingResponse\x12\x18\n" +
 	"\aversion\x18\x01 \x01(\tR\aversion\x12!\n" +
@@ -778,7 +778,7 @@ const file_envorka_v1_envorka_proto_rawDesc = "" +
 	"\x06socket\x18\x04 \x01(\tR\x06socket\"\xfc\x01\n" +
 	"\x0fComponentStatus\x12\x0e\n" +
 	"\x02id\x18\x01 \x01(\tR\x02id\x12*\n" +
-	"\x06status\x18\x02 \x01(\x0e2\x12.envorka.v1.StatusR\x06status\x12\x18\n" +
+	"\x06status\x18\x02 \x01(\x0e2\x12.envorca.v1.StatusR\x06status\x12\x18\n" +
 	"\asummary\x18\x03 \x01(\tR\asummary\x12\x16\n" +
 	"\x06reason\x18\x04 \x01(\tR\x06reason\x12&\n" +
 	"\x0erecommendation\x18\x05 \x01(\tR\x0erecommendation\x12\x1e\n" +
@@ -790,9 +790,9 @@ const file_envorka_v1_envorka_proto_rawDesc = "" +
 	"\fdaemon_state\x18\x02 \x01(\tR\vdaemonState\x12%\n" +
 	"\x0euptime_seconds\x18\x03 \x01(\x03R\ruptimeSeconds\x12\x16\n" +
 	"\x06socket\x18\x04 \x01(\tR\x06socket\x129\n" +
-	"\x0eoverall_status\x18\x05 \x01(\x0e2\x12.envorka.v1.StatusR\roverallStatus\x12;\n" +
+	"\x0eoverall_status\x18\x05 \x01(\x0e2\x12.envorca.v1.StatusR\roverallStatus\x12;\n" +
 	"\n" +
-	"components\x18\x06 \x03(\v2\x1b.envorka.v1.ComponentStatusR\n" +
+	"components\x18\x06 \x03(\v2\x1b.envorca.v1.ComponentStatusR\n" +
 	"components\"\x16\n" +
 	"\x14GetRepairPlanRequest\"\xd3\x01\n" +
 	"\fRepairAction\x12!\n" +
@@ -804,7 +804,7 @@ const file_envorka_v1_envorka_proto_rawDesc = "" +
 	"\x15requires_confirmation\x18\x06 \x01(\bR\x14requiresConfirmation\"c\n" +
 	"\n" +
 	"RepairPlan\x122\n" +
-	"\aactions\x18\x01 \x03(\v2\x18.envorka.v1.RepairActionR\aactions\x12!\n" +
+	"\aactions\x18\x01 \x03(\v2\x18.envorca.v1.RepairActionR\aactions\x12!\n" +
 	"\fevaluated_at\x18\x02 \x01(\tR\vevaluatedAt\"Q\n" +
 	"\x14ExecuteRepairRequest\x12\x1b\n" +
 	"\taction_id\x18\x01 \x01(\tR\bactionId\x12\x1c\n" +
@@ -824,56 +824,56 @@ const file_envorka_v1_envorka_proto_rawDesc = "" +
 	"\bCRITICAL\x10\x03\x12\v\n" +
 	"\aUNKNOWN\x10\x042\xed\x02\n" +
 	"\x06Daemon\x129\n" +
-	"\x04Ping\x12\x17.envorka.v1.PingRequest\x1a\x18.envorka.v1.PingResponse\x12H\n" +
-	"\tGetStatus\x12\x1c.envorka.v1.GetStatusRequest\x1a\x1d.envorka.v1.EnvironmentStatus\x12I\n" +
-	"\rGetRepairPlan\x12 .envorka.v1.GetRepairPlanRequest\x1a\x16.envorka.v1.RepairPlan\x12L\n" +
-	"\rExecuteRepair\x12 .envorka.v1.ExecuteRepairRequest\x1a\x19.envorka.v1.RepairOutcome\x12E\n" +
-	"\bShutdown\x12\x1b.envorka.v1.ShutdownRequest\x1a\x1c.envorka.v1.ShutdownResponseB5Z3envorka.dev/envorka/api/gen/go/envorka/v1;envorkav1b\x06proto3"
+	"\x04Ping\x12\x17.envorca.v1.PingRequest\x1a\x18.envorca.v1.PingResponse\x12H\n" +
+	"\tGetStatus\x12\x1c.envorca.v1.GetStatusRequest\x1a\x1d.envorca.v1.EnvironmentStatus\x12I\n" +
+	"\rGetRepairPlan\x12 .envorca.v1.GetRepairPlanRequest\x1a\x16.envorca.v1.RepairPlan\x12L\n" +
+	"\rExecuteRepair\x12 .envorca.v1.ExecuteRepairRequest\x1a\x19.envorca.v1.RepairOutcome\x12E\n" +
+	"\bShutdown\x12\x1b.envorca.v1.ShutdownRequest\x1a\x1c.envorca.v1.ShutdownResponseB5Z3envorca.dev/envorca/api/gen/go/envorca/v1;envorcav1b\x06proto3"
 
 var (
-	file_envorka_v1_envorka_proto_rawDescOnce sync.Once
-	file_envorka_v1_envorka_proto_rawDescData []byte
+	file_envorca_v1_envorca_proto_rawDescOnce sync.Once
+	file_envorca_v1_envorca_proto_rawDescData []byte
 )
 
-func file_envorka_v1_envorka_proto_rawDescGZIP() []byte {
-	file_envorka_v1_envorka_proto_rawDescOnce.Do(func() {
-		file_envorka_v1_envorka_proto_rawDescData = protoimpl.X.CompressGZIP(unsafe.Slice(unsafe.StringData(file_envorka_v1_envorka_proto_rawDesc), len(file_envorka_v1_envorka_proto_rawDesc)))
+func file_envorca_v1_envorca_proto_rawDescGZIP() []byte {
+	file_envorca_v1_envorca_proto_rawDescOnce.Do(func() {
+		file_envorca_v1_envorca_proto_rawDescData = protoimpl.X.CompressGZIP(unsafe.Slice(unsafe.StringData(file_envorca_v1_envorca_proto_rawDesc), len(file_envorca_v1_envorca_proto_rawDesc)))
 	})
-	return file_envorka_v1_envorka_proto_rawDescData
+	return file_envorca_v1_envorca_proto_rawDescData
 }
 
-var file_envorka_v1_envorka_proto_enumTypes = make([]protoimpl.EnumInfo, 1)
-var file_envorka_v1_envorka_proto_msgTypes = make([]protoimpl.MessageInfo, 12)
-var file_envorka_v1_envorka_proto_goTypes = []any{
-	(Status)(0),                  // 0: envorka.v1.Status
-	(*PingRequest)(nil),          // 1: envorka.v1.PingRequest
-	(*PingResponse)(nil),         // 2: envorka.v1.PingResponse
-	(*ComponentStatus)(nil),      // 3: envorka.v1.ComponentStatus
-	(*GetStatusRequest)(nil),     // 4: envorka.v1.GetStatusRequest
-	(*EnvironmentStatus)(nil),    // 5: envorka.v1.EnvironmentStatus
-	(*GetRepairPlanRequest)(nil), // 6: envorka.v1.GetRepairPlanRequest
-	(*RepairAction)(nil),         // 7: envorka.v1.RepairAction
-	(*RepairPlan)(nil),           // 8: envorka.v1.RepairPlan
-	(*ExecuteRepairRequest)(nil), // 9: envorka.v1.ExecuteRepairRequest
-	(*RepairOutcome)(nil),        // 10: envorka.v1.RepairOutcome
-	(*ShutdownRequest)(nil),      // 11: envorka.v1.ShutdownRequest
-	(*ShutdownResponse)(nil),     // 12: envorka.v1.ShutdownResponse
+var file_envorca_v1_envorca_proto_enumTypes = make([]protoimpl.EnumInfo, 1)
+var file_envorca_v1_envorca_proto_msgTypes = make([]protoimpl.MessageInfo, 12)
+var file_envorca_v1_envorca_proto_goTypes = []any{
+	(Status)(0),                  // 0: envorca.v1.Status
+	(*PingRequest)(nil),          // 1: envorca.v1.PingRequest
+	(*PingResponse)(nil),         // 2: envorca.v1.PingResponse
+	(*ComponentStatus)(nil),      // 3: envorca.v1.ComponentStatus
+	(*GetStatusRequest)(nil),     // 4: envorca.v1.GetStatusRequest
+	(*EnvironmentStatus)(nil),    // 5: envorca.v1.EnvironmentStatus
+	(*GetRepairPlanRequest)(nil), // 6: envorca.v1.GetRepairPlanRequest
+	(*RepairAction)(nil),         // 7: envorca.v1.RepairAction
+	(*RepairPlan)(nil),           // 8: envorca.v1.RepairPlan
+	(*ExecuteRepairRequest)(nil), // 9: envorca.v1.ExecuteRepairRequest
+	(*RepairOutcome)(nil),        // 10: envorca.v1.RepairOutcome
+	(*ShutdownRequest)(nil),      // 11: envorca.v1.ShutdownRequest
+	(*ShutdownResponse)(nil),     // 12: envorca.v1.ShutdownResponse
 }
-var file_envorka_v1_envorka_proto_depIdxs = []int32{
-	0,  // 0: envorka.v1.ComponentStatus.status:type_name -> envorka.v1.Status
-	0,  // 1: envorka.v1.EnvironmentStatus.overall_status:type_name -> envorka.v1.Status
-	3,  // 2: envorka.v1.EnvironmentStatus.components:type_name -> envorka.v1.ComponentStatus
-	7,  // 3: envorka.v1.RepairPlan.actions:type_name -> envorka.v1.RepairAction
-	1,  // 4: envorka.v1.Daemon.Ping:input_type -> envorka.v1.PingRequest
-	4,  // 5: envorka.v1.Daemon.GetStatus:input_type -> envorka.v1.GetStatusRequest
-	6,  // 6: envorka.v1.Daemon.GetRepairPlan:input_type -> envorka.v1.GetRepairPlanRequest
-	9,  // 7: envorka.v1.Daemon.ExecuteRepair:input_type -> envorka.v1.ExecuteRepairRequest
-	11, // 8: envorka.v1.Daemon.Shutdown:input_type -> envorka.v1.ShutdownRequest
-	2,  // 9: envorka.v1.Daemon.Ping:output_type -> envorka.v1.PingResponse
-	5,  // 10: envorka.v1.Daemon.GetStatus:output_type -> envorka.v1.EnvironmentStatus
-	8,  // 11: envorka.v1.Daemon.GetRepairPlan:output_type -> envorka.v1.RepairPlan
-	10, // 12: envorka.v1.Daemon.ExecuteRepair:output_type -> envorka.v1.RepairOutcome
-	12, // 13: envorka.v1.Daemon.Shutdown:output_type -> envorka.v1.ShutdownResponse
+var file_envorca_v1_envorca_proto_depIdxs = []int32{
+	0,  // 0: envorca.v1.ComponentStatus.status:type_name -> envorca.v1.Status
+	0,  // 1: envorca.v1.EnvironmentStatus.overall_status:type_name -> envorca.v1.Status
+	3,  // 2: envorca.v1.EnvironmentStatus.components:type_name -> envorca.v1.ComponentStatus
+	7,  // 3: envorca.v1.RepairPlan.actions:type_name -> envorca.v1.RepairAction
+	1,  // 4: envorca.v1.Daemon.Ping:input_type -> envorca.v1.PingRequest
+	4,  // 5: envorca.v1.Daemon.GetStatus:input_type -> envorca.v1.GetStatusRequest
+	6,  // 6: envorca.v1.Daemon.GetRepairPlan:input_type -> envorca.v1.GetRepairPlanRequest
+	9,  // 7: envorca.v1.Daemon.ExecuteRepair:input_type -> envorca.v1.ExecuteRepairRequest
+	11, // 8: envorca.v1.Daemon.Shutdown:input_type -> envorca.v1.ShutdownRequest
+	2,  // 9: envorca.v1.Daemon.Ping:output_type -> envorca.v1.PingResponse
+	5,  // 10: envorca.v1.Daemon.GetStatus:output_type -> envorca.v1.EnvironmentStatus
+	8,  // 11: envorca.v1.Daemon.GetRepairPlan:output_type -> envorca.v1.RepairPlan
+	10, // 12: envorca.v1.Daemon.ExecuteRepair:output_type -> envorca.v1.RepairOutcome
+	12, // 13: envorca.v1.Daemon.Shutdown:output_type -> envorca.v1.ShutdownResponse
 	9,  // [9:14] is the sub-list for method output_type
 	4,  // [4:9] is the sub-list for method input_type
 	4,  // [4:4] is the sub-list for extension type_name
@@ -881,27 +881,27 @@ var file_envorka_v1_envorka_proto_depIdxs = []int32{
 	0,  // [0:4] is the sub-list for field type_name
 }
 
-func init() { file_envorka_v1_envorka_proto_init() }
-func file_envorka_v1_envorka_proto_init() {
-	if File_envorka_v1_envorka_proto != nil {
+func init() { file_envorca_v1_envorca_proto_init() }
+func file_envorca_v1_envorca_proto_init() {
+	if File_envorca_v1_envorca_proto != nil {
 		return
 	}
 	type x struct{}
 	out := protoimpl.TypeBuilder{
 		File: protoimpl.DescBuilder{
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
-			RawDescriptor: unsafe.Slice(unsafe.StringData(file_envorka_v1_envorka_proto_rawDesc), len(file_envorka_v1_envorka_proto_rawDesc)),
+			RawDescriptor: unsafe.Slice(unsafe.StringData(file_envorca_v1_envorca_proto_rawDesc), len(file_envorca_v1_envorca_proto_rawDesc)),
 			NumEnums:      1,
 			NumMessages:   12,
 			NumExtensions: 0,
 			NumServices:   1,
 		},
-		GoTypes:           file_envorka_v1_envorka_proto_goTypes,
-		DependencyIndexes: file_envorka_v1_envorka_proto_depIdxs,
-		EnumInfos:         file_envorka_v1_envorka_proto_enumTypes,
-		MessageInfos:      file_envorka_v1_envorka_proto_msgTypes,
+		GoTypes:           file_envorca_v1_envorca_proto_goTypes,
+		DependencyIndexes: file_envorca_v1_envorca_proto_depIdxs,
+		EnumInfos:         file_envorca_v1_envorca_proto_enumTypes,
+		MessageInfos:      file_envorca_v1_envorca_proto_msgTypes,
 	}.Build()
-	File_envorka_v1_envorka_proto = out.File
-	file_envorka_v1_envorka_proto_goTypes = nil
-	file_envorka_v1_envorka_proto_depIdxs = nil
+	File_envorca_v1_envorca_proto = out.File
+	file_envorca_v1_envorca_proto_goTypes = nil
+	file_envorca_v1_envorca_proto_depIdxs = nil
 }

@@ -8,10 +8,10 @@ coverage/
 node_modules/
 
 # Build artifacts
-/envorkad
-/envorka
-daemon/envorkad
-cli/envorka
+/envorcad
+/envorca
+daemon/envorcad
+cli/envorca
 
 # Credentials and secrets — never commit these.
 .env.*

@@ -5,15 +5,15 @@ import (
 	"strings"
 	"testing"
 
-	envorkav1 "envorka.dev/envorka/api/gen/go/envorka/v1"
+	envorcav1 "envorca.dev/envorca/api/gen/go/envorca/v1"
 )
 
-func components(st *envorkav1.ComponentStatus) []*envorkav1.ComponentStatus {
-	return []*envorkav1.ComponentStatus{st}
+func components(st *envorcav1.ComponentStatus) []*envorcav1.ComponentStatus {
+	return []*envorcav1.ComponentStatus{st}
 }
 
-func wslStatus(s envorkav1.Status, summary string) *envorkav1.ComponentStatus {
-	return &envorkav1.ComponentStatus{Id: "wsl", Status: s, Summary: summary}
+func wslStatus(s envorcav1.Status, summary string) *envorcav1.ComponentStatus {
+	return &envorcav1.ComponentStatus{Id: "wsl", Status: s, Summary: summary}
 }
 
 // scriptedRunner emulates wsl.exe: --list --verbose reports the default
@@ -39,7 +39,7 @@ func (s *scriptedRunner) run(_ context.Context, args ...string) ([]byte, error) 
 			if s.failBootsFrom > 0 && s.boots >= s.failBootsFrom {
 				return nil, context.DeadlineExceeded
 			}
-			return []byte("envorka:boot"), nil
+			return []byte("envorca:boot"), nil
 		}
 		return nil, nil
 	}
@@ -47,7 +47,7 @@ func (s *scriptedRunner) run(_ context.Context, args ...string) ([]byte, error) 
 
 func TestPlanEmptyWhenHealthy(t *testing.T) {
 	r := New(nil)
-	plan := r.Plan(components(wslStatus(envorkav1.Status_HEALTHY, "WSL2 ready")))
+	plan := r.Plan(components(wslStatus(envorcav1.Status_HEALTHY, "WSL2 ready")))
 	if len(plan) != 0 {
 		t.Fatalf("healthy components produced %d actions: %+v", len(plan), plan)
 	}
@@ -55,7 +55,7 @@ func TestPlanEmptyWhenHealthy(t *testing.T) {
 
 func TestPlanOffersStartAndRestartOnBootFailure(t *testing.T) {
 	r := New(nil)
-	st := wslStatus(envorkav1.Status_CRITICAL, "Linux environment failed to start")
+	st := wslStatus(envorcav1.Status_CRITICAL, "Linux environment failed to start")
 	plan := r.Plan(components(st))
 	if len(plan) != 2 {
 		t.Fatalf("got %d actions, want 2: %+v", len(plan), plan)
@@ -74,7 +74,7 @@ func TestPlanOffersStartAndRestartOnBootFailure(t *testing.T) {
 
 func TestPlanOffersOnlyRestartOnQueryFailure(t *testing.T) {
 	r := New(nil)
-	st := wslStatus(envorkav1.Status_CRITICAL, "could not query WSL status")
+	st := wslStatus(envorcav1.Status_CRITICAL, "could not query WSL status")
 	plan := r.Plan(components(st))
 	if len(plan) != 1 || plan[0].ActionId != "wsl.restart" {
 		t.Fatalf("want only wsl.restart, got %+v", plan)
@@ -83,7 +83,7 @@ func TestPlanOffersOnlyRestartOnQueryFailure(t *testing.T) {
 
 func TestPlanEmptyForWarnings(t *testing.T) {
 	r := New(nil)
-	plan := r.Plan(components(wslStatus(envorkav1.Status_WARNING, "no default Linux distribution")))
+	plan := r.Plan(components(wslStatus(envorcav1.Status_WARNING, "no default Linux distribution")))
 	if len(plan) != 0 {
 		t.Fatalf("warnings must not auto-offer repairs, got %+v", plan)
 	}
@@ -93,7 +93,7 @@ func TestExecuteStartVerifies(t *testing.T) {
 	s := &scriptedRunner{defaultDistro: "Ubuntu"}
 	r := New(s.run)
 	outcome, err := r.Execute(context.Background(), "wsl.start", false,
-		components(wslStatus(envorkav1.Status_CRITICAL, "Linux environment failed to start")))
+		components(wslStatus(envorcav1.Status_CRITICAL, "Linux environment failed to start")))
 	if err != nil {
 		t.Fatalf("Execute: %v", err)
 	}
@@ -109,7 +109,7 @@ func TestExecuteStartReportsFailure(t *testing.T) {
 	s := &scriptedRunner{defaultDistro: "Ubuntu", failBootsFrom: 1}
 	r := New(s.run)
 	outcome, err := r.Execute(context.Background(), "wsl.start", false,
-		components(wslStatus(envorkav1.Status_CRITICAL, "Linux environment failed to start")))
+		components(wslStatus(envorcav1.Status_CRITICAL, "Linux environment failed to start")))
 	if err != nil {
 		t.Fatalf("Execute: %v", err)
 	}
@@ -125,7 +125,7 @@ func TestExecuteRequiresConfirmationForRestart(t *testing.T) {
 	s := &scriptedRunner{defaultDistro: "Ubuntu"}
 	r := New(s.run)
 	_, err := r.Execute(context.Background(), "wsl.restart", false,
-		components(wslStatus(envorkav1.Status_CRITICAL, "Linux environment failed to start")))
+		components(wslStatus(envorcav1.Status_CRITICAL, "Linux environment failed to start")))
 	if err == nil {
 		t.Fatal("wsl.restart without confirmation must error")
 	}
@@ -141,7 +141,7 @@ func TestExecuteRestartConfirmed(t *testing.T) {
 	s := &scriptedRunner{defaultDistro: "Ubuntu"}
 	r := New(s.run)
 	outcome, err := r.Execute(context.Background(), "wsl.restart", true,
-		components(wslStatus(envorkav1.Status_CRITICAL, "could not query WSL status")))
+		components(wslStatus(envorcav1.Status_CRITICAL, "could not query WSL status")))
 	if err != nil {
 		t.Fatalf("Execute: %v", err)
 	}
@@ -160,7 +160,7 @@ func TestExecuteVerifyFailure(t *testing.T) {
 	s := &scriptedRunner{defaultDistro: "Ubuntu", failBootsFrom: 2}
 	r := New(s.run)
 	outcome, err := r.Execute(context.Background(), "wsl.start", false,
-		components(wslStatus(envorkav1.Status_CRITICAL, "Linux environment failed to start")))
+		components(wslStatus(envorcav1.Status_CRITICAL, "Linux environment failed to start")))
 	if err != nil {
 		t.Fatalf("Execute: %v", err)
 	}
@@ -183,7 +183,7 @@ func TestExecuteRejectsNoLongerApplicable(t *testing.T) {
 	s := &scriptedRunner{defaultDistro: "Ubuntu"}
 	r := New(s.run)
 	outcome, err := r.Execute(context.Background(), "wsl.start", false,
-		components(wslStatus(envorkav1.Status_HEALTHY, "WSL2 ready")))
+		components(wslStatus(envorcav1.Status_HEALTHY, "WSL2 ready")))
 	if err != nil {
 		t.Fatalf("Execute: %v", err)
 	}

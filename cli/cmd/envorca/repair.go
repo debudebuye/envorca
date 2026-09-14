@@ -9,8 +9,8 @@ import (
 
 	"github.com/spf13/cobra"
 
-	"envorka.dev/envorka/api/ipc"
-	"envorka.dev/envorka/cli/internal/client"
+	"envorca.dev/envorca/api/ipc"
+	"envorca.dev/envorca/cli/internal/client"
 )
 
 func init() {
@@ -28,7 +28,7 @@ var repairCmd = &cobra.Command{
 		ctx := cmd.Context()
 		endpoint := ipc.DefaultEndpoint(ipc.DefaultStateDir())
 		if !client.Probe(ctx, endpoint) {
-			return errors.New("Envorka daemon is not running.\nRun 'envorka start' to launch it.")
+			return errors.New("Envorca daemon is not running.\nRun 'envorca start' to launch it.")
 		}
 		conn, err := client.Dial(ctx, endpoint)
 		if err != nil {
@@ -45,7 +45,7 @@ var repairCmd = &cobra.Command{
 			return nil
 		}
 
-		fmt.Fprintf(cmd.OutOrStdout(), "Envorka can fix %d issue(s):\n\n", len(plan.Actions))
+		fmt.Fprintf(cmd.OutOrStdout(), "Envorca can fix %d issue(s):\n\n", len(plan.Actions))
 		for _, a := range plan.Actions {
 			flag := ""
 			if a.RequiresConfirmation {
@@ -88,9 +88,9 @@ var repairCmd = &cobra.Command{
 			}
 		}
 		if failures == 0 {
-			fmt.Fprintln(cmd.OutOrStdout(), "\nAll repairs applied. Run 'envorka doctor' to confirm.")
+			fmt.Fprintln(cmd.OutOrStdout(), "\nAll repairs applied. Run 'envorca doctor' to confirm.")
 		} else {
-			fmt.Fprintf(cmd.OutOrStdout(), "\n%d repair(s) failed. Run 'envorka doctor' for details.\n", failures)
+			fmt.Fprintf(cmd.OutOrStdout(), "\n%d repair(s) failed. Run 'envorca doctor' for details.\n", failures)
 		}
 		return nil
 	},

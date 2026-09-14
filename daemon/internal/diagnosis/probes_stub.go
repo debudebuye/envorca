@@ -5,8 +5,8 @@ package diagnosis
 import (
 	"context"
 
-	envorkav1 "envorka.dev/envorka/api/gen/go/envorka/v1"
-	"envorka.dev/envorka/daemon/internal/health"
+	envorcav1 "envorca.dev/envorca/api/gen/go/envorca/v1"
+	"envorca.dev/envorca/daemon/internal/health"
 )
 
 // On non-Windows development machines these checks are skipped and reported
@@ -14,13 +14,13 @@ import (
 // reports accurately (or "not installed") on any platform.
 
 func windowsProbe() health.Probe {
-	return func(context.Context) envorkav1.ComponentStatus {
-		return envorkav1.ComponentStatus{Status: envorkav1.Status_UNKNOWN, Summary: "running on non-Windows; check skipped"}
+	return func(context.Context) envorcav1.ComponentStatus {
+		return envorcav1.ComponentStatus{Status: envorcav1.Status_UNKNOWN, Summary: "running on non-Windows; check skipped"}
 	}
 }
 
 func virtualizationProbe() health.Probe {
-	return func(context.Context) envorkav1.ComponentStatus {
-		return envorkav1.ComponentStatus{Status: envorkav1.Status_UNKNOWN, Summary: "running on non-Windows; check skipped"}
+	return func(context.Context) envorcav1.ComponentStatus {
+		return envorcav1.ComponentStatus{Status: envorcav1.Status_UNKNOWN, Summary: "running on non-Windows; check skipped"}
 	}
 }

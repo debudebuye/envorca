@@ -9,26 +9,26 @@ set -euo pipefail
 DIR="${1:-dist}"
 mkdir -p "$DIR"
 
-export ENVORKA_SOCKET="${ENVORKA_SOCKET:-/tmp/rkfaultrun/envorka-fault.sock}"
+export ENVORCA_SOCKET="${ENVORCA_SOCKET:-/tmp/rkfaultrun/envorca-fault.sock}"
 export PATH="$DIR:$PATH"
 
 cleanup() {
-  envorka stop 2>/dev/null || true
-  rm -f "$ENVORKA_SOCKET"
-  mkdir -p "$(dirname "$ENVORKA_SOCKET")"
+  envorca stop 2>/dev/null || true
+  rm -f "$ENVORCA_SOCKET"
+  mkdir -p "$(dirname "$ENVORCA_SOCKET")"
 }
 trap cleanup EXIT
 cleanup
 
 echo "=== Start daemon ==="
-envorka start --daemon "$DIR/envorkad.exe"
+envorca start --daemon "$DIR/envorcad.exe"
 sleep 1
-envorka status >/dev/null 2>&1 || { echo "FAIL: daemon not ready"; exit 1; }
+envorca status >/dev/null 2>&1 || { echo "FAIL: daemon not ready"; exit 1; }
 echo "daemon ready"
 
 echo "=== Baseline doctor (all healthy) ==="
-envorka doctor || true
-OUT=$(envorka doctor 2>&1) || true
+envorca doctor || true
+OUT=$(envorca doctor 2>&1) || true
 echo "$OUT"
 echo "$OUT" | grep -q "Overall:" || { echo "FAIL: doctor missing Overall"; exit 1; }
 
@@ -38,9 +38,9 @@ sleep 1
 
 echo "=== Doctor after fault ==="
 RUN=0; NORMAL=0
-if envorka doctor 2>&1 | grep -q "Overall:.*CRITICAL"; then
+if envorca doctor 2>&1 | grep -q "Overall:.*CRITICAL"; then
   RUN=1
-elif envorka doctor 2>&1 | grep -q "Overall:.*WARNING"; then
+elif envorca doctor 2>&1 | grep -q "Overall:.*WARNING"; then
   NORMAL=1
 else
   NORMAL=1
@@ -49,17 +49,17 @@ echo "doctor returned; run=$RUN normal=$NORMAL"
 
 echo "=== Repair ==="
 if [ "$RUN" -eq 1 ]; then
-  echo "y" | envorka repair || true
+  echo "y" | envorca repair || true
   sleep 2
 fi
 
 echo "=== Verify repair ==="
-OUT=$(envorka doctor 2>&1) || true
+OUT=$(envorca doctor 2>&1) || true
 echo "$OUT"
 echo "$OUT" | grep -q "Overall:" || { echo "FAIL: doctor missing Overall after repair"; exit 1; }
 
 echo "=== Stop daemon ==="
-envorka stop
+envorca stop
 sleep 1
 
 echo "=== FAULT-REPAIR CYCLE OK ==="

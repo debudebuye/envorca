@@ -1,4 +1,4 @@
-module envorka.dev/envorka/api
+module envorca.dev/envorca/api
 
 go 1.27
 

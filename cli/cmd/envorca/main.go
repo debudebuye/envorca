@@ -1,4 +1,4 @@
-// envorka is the thin Envorka CLI. It dials the daemon over local IPC and
+// envorca is the thin Envorca CLI. It dials the daemon over local IPC and
 // renders responses; it must never reimplement daemon business logic.
 package main
 
@@ -12,8 +12,8 @@ import (
 const cliVersion = "0.1.0-dev"
 
 var rootCmd = &cobra.Command{
-	Use:           "envorka",
-	Short:         "Envorka makes Linux development on Windows just work",
+	Use:           "envorca",
+	Short:         "Envorca makes Linux development on Windows just work",
 	SilenceUsage:  true,
 	SilenceErrors: true,
 }
@@ -24,7 +24,7 @@ func init() {
 
 func main() {
 	if err := rootCmd.Execute(); err != nil {
-		fmt.Fprintln(os.Stderr, "envorka:", err)
+		fmt.Fprintln(os.Stderr, "envorca:", err)
 		os.Exit(1)
 	}
 }
