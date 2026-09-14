@@ -1,6 +1,6 @@
 package ipc
 
-// Package ipc provides the local transport shared by the Runorka daemon and
+// Package ipc provides the local transport shared by the Envorka daemon and
 // its clients. Windows builds use a named pipe restricted to the current
 // user; non-Windows builds use a Unix domain socket so the full stack is
 // testable without Windows. Endpoint resolution, security, dial, and listen
@@ -13,13 +13,13 @@ import (
 )
 
 // EnvOverride forces the transport endpoint for tests and unusual setups.
-const EnvOverride = "RUNORKA_SOCKET"
+const EnvOverride = "ENVORKA_SOCKET"
 
-// DefaultStateDir returns the platform default Runorka state directory.
+// DefaultStateDir returns the platform default Envorka state directory.
 func DefaultStateDir() string { return defaultStateDir() }
 
 // DefaultEndpoint returns the default transport endpoint for a state
-// directory, honoring the RUNORKA_SOCKET override.
+// directory, honoring the ENVORKA_SOCKET override.
 func DefaultEndpoint(stateDir string) string {
 	if s := os.Getenv(EnvOverride); s != "" {
 		return s

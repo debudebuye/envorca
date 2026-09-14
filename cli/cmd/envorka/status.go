@@ -9,9 +9,9 @@ import (
 
 	"github.com/spf13/cobra"
 
-	runorkav1 "runorka.dev/runorka/api/gen/go/runorka/v1"
-	"runorka.dev/runorka/api/ipc"
-	"runorka.dev/runorka/cli/internal/client"
+	envorkav1 "envorka.dev/envorka/api/gen/go/envorka/v1"
+	"envorka.dev/envorka/api/ipc"
+	"envorka.dev/envorka/cli/internal/client"
 )
 
 func init() {
@@ -25,7 +25,7 @@ var statusCmd = &cobra.Command{
 		ctx := cmd.Context()
 		endpoint := ipc.DefaultEndpoint(ipc.DefaultStateDir())
 		if !client.Probe(ctx, endpoint) {
-			return errors.New("Runorka daemon is not running.\nRun 'runorka start' to launch it.")
+			return errors.New("Envorka daemon is not running.\nRun 'envorka start' to launch it.")
 		}
 		conn, err := client.Dial(ctx, endpoint)
 		if err != nil {
@@ -41,9 +41,9 @@ var statusCmd = &cobra.Command{
 	},
 }
 
-func renderStatus(w io.Writer, st *runorkav1.EnvironmentStatus) {
+func renderStatus(w io.Writer, st *envorkav1.EnvironmentStatus) {
 	f := func(format string, a ...any) { fmt.Fprintf(w, format+"\n", a...) }
-	f("RUNORKA DAEMON")
+	f("ENVORKA DAEMON")
 	f("  State:    %s", st.DaemonState)
 	f("  Version:  %s", st.Version)
 	f("  Socket:   %s", st.Socket)
@@ -55,30 +55,30 @@ func renderStatus(w io.Writer, st *runorkav1.EnvironmentStatus) {
 	}
 }
 
-func plainStatus(s runorkav1.Status) string {
+func plainStatus(s envorkav1.Status) string {
 	switch s {
-	case runorkav1.Status_HEALTHY:
+	case envorkav1.Status_HEALTHY:
 		return "HEALTHY"
-	case runorkav1.Status_WARNING:
+	case envorkav1.Status_WARNING:
 		return "WARNING"
-	case runorkav1.Status_CRITICAL:
+	case envorkav1.Status_CRITICAL:
 		return "CRITICAL"
 	default:
 		return "UNKNOWN"
 	}
 }
 
-func decorateStatus(s runorkav1.Status, text string) string {
+func decorateStatus(s envorkav1.Status, text string) string {
 	if !isTerminal() {
 		return text
 	}
 	var color string
 	switch s {
-	case runorkav1.Status_HEALTHY:
+	case envorkav1.Status_HEALTHY:
 		color = "\x1b[32m"
-	case runorkav1.Status_WARNING:
+	case envorkav1.Status_WARNING:
 		color = "\x1b[33m"
-	case runorkav1.Status_CRITICAL:
+	case envorkav1.Status_CRITICAL:
 		color = "\x1b[31m"
 	default:
 		color = "\x1b[36m"

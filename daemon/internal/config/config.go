@@ -7,18 +7,18 @@ import (
 
 	"gopkg.in/yaml.v3"
 
-	"runorka.dev/runorka/api/ipc"
+	"envorka.dev/envorka/api/ipc"
 )
 
 // Config holds daemon settings. Empty fields resolve to platform defaults,
 // so a missing config file is not an error.
 type Config struct {
-	// StateDir is the root of Runorka local application state.
+	// StateDir is the root of Envorka local application state.
 	StateDir string `yaml:"state_dir"`
 	// LogLevel is one of debug, info, warn, error.
 	LogLevel string `yaml:"log_level"`
 	// Socket overrides the IPC endpoint (pipe name on Windows, socket path
-	// elsewhere). Env override RUNORKA_SOCKET wins if both are set.
+	// elsewhere). Env override ENVORKA_SOCKET wins if both are set.
 	Socket string `yaml:"socket"`
 }
 
@@ -47,7 +47,7 @@ func (c Config) Endpoint() string {
 func Load(path string) (Config, error) {
 	cfg := Defaults()
 	if path == "" {
-		path = os.Getenv("RUNORKA_CONFIG")
+		path = os.Getenv("ENVORKA_CONFIG")
 	}
 	if path != "" {
 		b, err := os.ReadFile(path)

@@ -1,8 +1,8 @@
-# RUNORKA
+# ENVORKA
 
-Runorka makes Linux development on Windows just work.
+Envorka makes Linux development on Windows just work.
 
-Runorka manages the WSL2, Linux, and container infrastructure behind Windows
+Envorka manages the WSL2, Linux, and container infrastructure behind Windows
 development workloads so the developer can focus on their project, not on
 virtualization internals. It detects problems, explains them, and recovers
 from them safely.
@@ -15,15 +15,15 @@ from them safely.
   SQLite state, and a user-session lifecycle.
 - Local IPC over Windows named pipes (`api/ipc`); Unix domain sockets are used
   on non-Windows builds for development and testing.
-- Thin CLI (`cli/`): `runorka status`, `runorka start`, `runorka stop`.
+- Thin CLI (`cli/`): `envorka status`, `envorka start`, `envorka stop`.
 
-Goal of M1: `runorka status` round-trips through the daemon.
+Goal of M1: `envorka status` round-trips through the daemon.
 
 ## Repository layout
 
 ```
 api/       shared API module: proto contract + generated code + IPC transport
-daemon/    the Runorka daemon (the only owner of infrastructure logic)
+daemon/    the Envorka daemon (the only owner of infrastructure logic)
 cli/       thin command-line client
 scripts/   proto generation, dev and integration helpers
 docs/      architecture decisions (ADRs)
@@ -62,9 +62,9 @@ cd cli    && GOOS=windows GOARCH=amd64 go build ./cmd/...
 On Windows:
 
 ```sh
-runorka start     # launch the daemon (autostarts via Task Scheduler)
-runorka status    # report daemon and environment status
-runorka stop      # gracefully shut the daemon down
+envorka start     # launch the daemon (autostarts via Task Scheduler)
+envorka status    # report daemon and environment status
+envorka stop      # gracefully shut the daemon down
 ```
 
 On Linux development machines the same commands run against a Unix-socket
@@ -72,8 +72,8 @@ transport so the full stack is testable without Windows.
 
 ## State and configuration
 
-- State: `%LOCALAPPDATA%\Runorka` on Windows,
-  `$XDG_DATA_HOME/runorka` (default `~/.local/share/runorka`) elsewhere.
+- State: `%LOCALAPPDATA%\Envorka` on Windows,
+  `$XDG_DATA_HOME/envorka` (default `~/.local/share/envorka`) elsewhere.
 - Optional YAML config overrides defaults; see `docs/configuration.md`.
 
 ## Design

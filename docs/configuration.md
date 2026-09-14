@@ -1,28 +1,28 @@
 # Configuration
 
-The daemon reads an optional YAML config file. Location: `RUNORKA_CONFIG`,
+The daemon reads an optional YAML config file. Location: `ENVORKA_CONFIG`,
 or none (defaults apply).
 
 ## Defaults
 
 | Setting     | Windows                  | Linux/macOS                       |
 |-------------|--------------------------|-----------------------------------|
-| `state_dir` | `%LOCALAPPDATA%\Runorka` | `$XDG_DATA_HOME/runorka` (`~/.local/share/runorka`) |
+| `state_dir` | `%LOCALAPPDATA%\Envorka` | `$XDG_DATA_HOME/envorka` (`~/.local/share/envorka`) |
 | `log_level` | `info`                   | `info`                            |
-| `socket`    | `\\.\pipe\runorka`       | `<state_dir>/run/runorka.sock`    |
+| `socket`    | `\\.\pipe\envorka`       | `<state_dir>/run/envorka.sock`    |
 
 ## Example
 
 ```yaml
-state_dir: C:\Users\me\AppData\Local\Runorka
+state_dir: C:\Users\me\AppData\Local\Envorka
 log_level: debug
-socket: \\.\pipe\runorka
+socket: \\.\pipe\envorka
 ```
 
 ## Endpoint overrides
 
 Clients and the daemon resolve the IPC endpoint from the same rule
-(`api/ipc`): the `socket` setting if set, then the `RUNORKA_SOCKET`
+(`api/ipc`): the `socket` setting if set, then the `ENVORKA_SOCKET`
 environment variable, then the platform default. This keeps one endpoint
 resolution rule across daemon, CLI, and tests.
 
@@ -33,8 +33,8 @@ resolution rule across daemon, CLI, and tests.
   config.yaml       (optional)
   state.db          SQLite: settings, and later projects/diagnostics/repairs
   logs/
-    runorka.log     structured JSON daemon log
+    envorka.log     structured JSON daemon log
     daemon.out.log  raw daemon process output while detached-starting
   run/
-    runorka.sock    IPC endpoint (Unix); runorka.pid
+    envorka.sock    IPC endpoint (Unix); envorka.pid
 ```

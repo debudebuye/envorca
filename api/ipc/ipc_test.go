@@ -12,7 +12,7 @@ import (
 )
 
 func TestListenDialRoundTrip(t *testing.T) {
-	ep := filepath.Join(t.TempDir(), "runorka.sock")
+	ep := filepath.Join(t.TempDir(), "envorka.sock")
 	ln, err := Listen(ep)
 	if err != nil {
 		t.Fatal(err)
@@ -60,7 +60,7 @@ func TestListenDialRoundTrip(t *testing.T) {
 }
 
 func TestListenRefusesInUse(t *testing.T) {
-	ep := filepath.Join(t.TempDir(), "runorka.sock")
+	ep := filepath.Join(t.TempDir(), "envorka.sock")
 	ln, err := Listen(ep)
 	if err != nil {
 		t.Fatal(err)
@@ -83,7 +83,7 @@ func TestEndpointOverride(t *testing.T) {
 }
 
 func TestCleanupRemovesSocket(t *testing.T) {
-	ep := filepath.Join(t.TempDir(), "runorka.sock")
+	ep := filepath.Join(t.TempDir(), "envorka.sock")
 	ln, err := Listen(ep)
 	if err != nil {
 		t.Fatal(err)

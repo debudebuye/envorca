@@ -5,8 +5,8 @@ import (
 	"strings"
 	"testing"
 
-	runorkav1 "runorka.dev/runorka/api/gen/go/runorka/v1"
-	"runorka.dev/runorka/daemon/internal/wsl"
+	envorkav1 "envorka.dev/envorka/api/gen/go/envorka/v1"
+	"envorka.dev/envorka/daemon/internal/wsl"
 )
 
 func fakeRunner(script map[string]func() error) wsl.Runner {
@@ -29,7 +29,7 @@ func fakeRunner(script map[string]func() error) wsl.Runner {
 }
 
 func TestRegistryRegistersAllComponents(t *testing.T) {
-	t.Setenv("RUNORKA_WSL_EXE", "/bin/echo")
+	t.Setenv("ENVORKA_WSL_EXE", "/bin/echo")
 	reg, err := Registry(Options{WSLRunner: fakeRunner(nil)})
 	if err != nil {
 		t.Fatalf("Registry: %v", err)
@@ -47,9 +47,9 @@ func TestRegistryRegistersAllComponents(t *testing.T) {
 }
 
 func TestWSLProbeHealthy(t *testing.T) {
-	t.Setenv("RUNORKA_WSL_EXE", "/bin/echo")
+	t.Setenv("ENVORKA_WSL_EXE", "/bin/echo")
 	st := statusFor(t, "wsl", fakeRunner(nil))
-	if st.Status != runorkav1.Status_HEALTHY {
+	if st.Status != envorkav1.Status_HEALTHY {
 		t.Fatalf("wsl = %s %q, want HEALTHY", st.Status, st.Summary)
 	}
 	if !strings.Contains(st.Summary, "Ubuntu-24.04") {
@@ -58,12 +58,12 @@ func TestWSLProbeHealthy(t *testing.T) {
 }
 
 func TestWSLProbeBootFailureIsCriticalAndRepairable(t *testing.T) {
-	t.Setenv("RUNORKA_WSL_EXE", "/bin/echo")
+	t.Setenv("ENVORKA_WSL_EXE", "/bin/echo")
 	runner := fakeRunner(map[string]func() error{
-		"--distribution Ubuntu-24.04 -- echo runorka:boot": func() error { return context.DeadlineExceeded },
+		"--distribution Ubuntu-24.04 -- echo envorka:boot": func() error { return context.DeadlineExceeded },
 	})
 	st := statusFor(t, "wsl", runner)
-	if st.Status != runorkav1.Status_CRITICAL {
+	if st.Status != envorkav1.Status_CRITICAL {
 		t.Fatalf("wsl = %s, want CRITICAL", st.Status)
 	}
 	if !st.SafeToFix {
@@ -75,7 +75,7 @@ func TestWSLProbeBootFailureIsCriticalAndRepairable(t *testing.T) {
 }
 
 func TestWSLProbeNoDefaultDistroWarns(t *testing.T) {
-	t.Setenv("RUNORKA_WSL_EXE", "/bin/echo")
+	t.Setenv("ENVORKA_WSL_EXE", "/bin/echo")
 	runner := func(_ context.Context, args ...string) ([]byte, error) {
 		if strings.Join(args, " ") == "--list --verbose" {
 			return []byte("  NAME                    STATE           VERSION\nUbuntu-22.04              Stopped         2\n"), nil
@@ -83,23 +83,23 @@ func TestWSLProbeNoDefaultDistroWarns(t *testing.T) {
 		return nil, nil
 	}
 	st := statusFor(t, "wsl", runner)
-	if st.Status != runorkav1.Status_WARNING {
+	if st.Status != envorkav1.Status_WARNING {
 		t.Fatalf("wsl = %s, want WARNING", st.Status)
 	}
 }
 
 func TestDaemonAndResourcesHealthy(t *testing.T) {
-	t.Setenv("RUNORKA_WSL_EXE", "/bin/echo")
+	t.Setenv("ENVORKA_WSL_EXE", "/bin/echo")
 	runner := fakeRunner(nil)
-	if st := statusFor(t, "daemon", runner); st.Status != runorkav1.Status_HEALTHY {
+	if st := statusFor(t, "daemon", runner); st.Status != envorkav1.Status_HEALTHY {
 		t.Errorf("daemon = %s, want HEALTHY", st.Status)
 	}
-	if st := statusFor(t, "resources", runner); st.Status != runorkav1.Status_HEALTHY {
+	if st := statusFor(t, "resources", runner); st.Status != envorkav1.Status_HEALTHY {
 		t.Errorf("resources = %s, want HEALTHY", st.Status)
 	}
 }
 
-func statusFor(t *testing.T, id string, runner wsl.Runner) *runorkav1.ComponentStatus {
+func statusFor(t *testing.T, id string, runner wsl.Runner) *envorkav1.ComponentStatus {
 	t.Helper()
 	reg, err := Registry(Options{WSLRunner: runner})
 	if err != nil {

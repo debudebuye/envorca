@@ -1,10 +1,10 @@
 syntax = "proto3";
 
-package runorka.v1;
+package envorka.v1;
 
-option go_package = "runorka.dev/runorka/api/gen/go/runorka/v1;runorkav1";
+option go_package = "envorka.dev/envorka/api/gen/go/envorka/v1;envorkav1";
 
-// Daemon is the single Runorka service. It is the only owner of
+// Daemon is the single Envorka service. It is the only owner of
 // infrastructure state and logic; CLI and desktop are thin clients.
 service Daemon {
   // Ping returns daemon identity and liveness.

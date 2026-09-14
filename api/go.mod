@@ -1,4 +1,4 @@
-module runorka.dev/runorka/api
+module envorka.dev/envorka/api
 
 go 1.27
 

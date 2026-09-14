@@ -8,18 +8,18 @@ import (
 
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
-	runorkav1 "runorka.dev/runorka/api/gen/go/runorka/v1"
-	"runorka.dev/runorka/daemon/internal/events"
-	"runorka.dev/runorka/daemon/internal/health"
-	"runorka.dev/runorka/daemon/internal/recovery"
-	"runorka.dev/runorka/daemon/internal/version"
+	envorkav1 "envorka.dev/envorka/api/gen/go/envorka/v1"
+	"envorka.dev/envorka/daemon/internal/events"
+	"envorka.dev/envorka/daemon/internal/health"
+	"envorka.dev/envorka/daemon/internal/recovery"
+	"envorka.dev/envorka/daemon/internal/version"
 )
 
-// Daemon implements the runorka.v1.Daemon gRPC service. It is stateless with
+// Daemon implements the envorka.v1.Daemon gRPC service. It is stateless with
 // respect to infrastructure; it reads live probes from the health registry
-// and delegates mutation to the services wired in cmd/runorkad.
+// and delegates mutation to the services wired in cmd/envorkad.
 type Daemon struct {
-	runorkav1.UnimplementedDaemonServer
+	envorkav1.UnimplementedDaemonServer
 
 	log         *slog.Logger
 	bus         *events.Bus
@@ -62,8 +62,8 @@ func (d *Daemon) State() string {
 }
 
 // Ping reports daemon identity and liveness.
-func (d *Daemon) Ping(ctx context.Context, in *runorkav1.PingRequest) (*runorkav1.PingResponse, error) {
-	return &runorkav1.PingResponse{
+func (d *Daemon) Ping(ctx context.Context, in *envorkav1.PingRequest) (*envorkav1.PingResponse, error) {
+	return &envorkav1.PingResponse{
 		Version:       version.Version,
 		DaemonState:   d.State(),
 		UptimeSeconds: int64(time.Since(d.started) / time.Second),
@@ -72,9 +72,9 @@ func (d *Daemon) Ping(ctx context.Context, in *runorkav1.PingRequest) (*runorkav
 }
 
 // GetStatus returns the live environment status snapshot.
-func (d *Daemon) GetStatus(ctx context.Context, in *runorkav1.GetStatusRequest) (*runorkav1.EnvironmentStatus, error) {
+func (d *Daemon) GetStatus(ctx context.Context, in *envorkav1.GetStatusRequest) (*envorkav1.EnvironmentStatus, error) {
 	components := d.health.Snapshot(ctx)
-	return &runorkav1.EnvironmentStatus{
+	return &envorkav1.EnvironmentStatus{
 		Version:       version.Version,
 		DaemonState:   d.State(),
 		UptimeSeconds: int64(time.Since(d.started) / time.Second),
@@ -86,9 +86,9 @@ func (d *Daemon) GetStatus(ctx context.Context, in *runorkav1.GetStatusRequest) 
 
 // GetRepairPlan evaluates the current component states and returns every
 // applicable, safe repair action.
-func (d *Daemon) GetRepairPlan(ctx context.Context, in *runorkav1.GetRepairPlanRequest) (*runorkav1.RepairPlan, error) {
+func (d *Daemon) GetRepairPlan(ctx context.Context, in *envorkav1.GetRepairPlanRequest) (*envorkav1.RepairPlan, error) {
 	components := d.health.Snapshot(ctx)
-	return &runorkav1.RepairPlan{
+	return &envorkav1.RepairPlan{
 		Actions:     d.recovery.Plan(components),
 		EvaluatedAt: time.Now().UTC().Format(time.RFC3339),
 	}, nil
@@ -96,7 +96,7 @@ func (d *Daemon) GetRepairPlan(ctx context.Context, in *runorkav1.GetRepairPlanR
 
 // ExecuteRepair runs one planned action. Actions that require confirmation
 // are rejected unless the request carries confirmed=true.
-func (d *Daemon) ExecuteRepair(ctx context.Context, in *runorkav1.ExecuteRepairRequest) (*runorkav1.RepairOutcome, error) {
+func (d *Daemon) ExecuteRepair(ctx context.Context, in *envorkav1.ExecuteRepairRequest) (*envorkav1.RepairOutcome, error) {
 	if d.recovery == nil {
 		return nil, status.Error(codes.FailedPrecondition, "repair subsystem not available")
 	}
@@ -114,12 +114,12 @@ func (d *Daemon) ExecuteRepair(ctx context.Context, in *runorkav1.ExecuteRepairR
 }
 
 // Shutdown requests a graceful daemon stop.
-func (d *Daemon) Shutdown(ctx context.Context, in *runorkav1.ShutdownRequest) (*runorkav1.ShutdownResponse, error) {
+func (d *Daemon) Shutdown(ctx context.Context, in *envorkav1.ShutdownRequest) (*envorkav1.ShutdownResponse, error) {
 	d.log.Info("shutdown requested")
 	d.bus.Publish(events.Event{Level: "info", Component: "daemon", Name: "shutdown_requested"})
 	d.SetState("stopping")
 	if d.requestStop != nil {
 		d.requestStop()
 	}
-	return &runorkav1.ShutdownResponse{}, nil
+	return &envorkav1.ShutdownResponse{}, nil
 }

@@ -8,9 +8,9 @@ import (
 
 	"github.com/spf13/cobra"
 
-	runorkav1 "runorka.dev/runorka/api/gen/go/runorka/v1"
-	"runorka.dev/runorka/api/ipc"
-	"runorka.dev/runorka/cli/internal/client"
+	envorkav1 "envorka.dev/envorka/api/gen/go/envorka/v1"
+	"envorka.dev/envorka/api/ipc"
+	"envorka.dev/envorka/cli/internal/client"
 )
 
 func init() {
@@ -24,7 +24,7 @@ var doctorCmd = &cobra.Command{
 		ctx := cmd.Context()
 		endpoint := ipc.DefaultEndpoint(ipc.DefaultStateDir())
 		if !client.Probe(ctx, endpoint) {
-			return errors.New("Runorka daemon is not running.\nRun 'runorka start' to launch it.")
+			return errors.New("Envorka daemon is not running.\nRun 'envorka start' to launch it.")
 		}
 		conn, err := client.Dial(ctx, endpoint)
 		if err != nil {
@@ -40,9 +40,9 @@ var doctorCmd = &cobra.Command{
 	},
 }
 
-func renderDoctor(w io.Writer, st *runorkav1.EnvironmentStatus) {
+func renderDoctor(w io.Writer, st *envorkav1.EnvironmentStatus) {
 	f := func(format string, a ...any) { fmt.Fprintf(w, format+"\n", a...) }
-	f("RUNORKA DOCTOR")
+	f("ENVORKA DOCTOR")
 	f("")
 	f("  %-22s%-10s%s", "COMPONENT", "STATUS", "NOTES")
 
@@ -50,11 +50,11 @@ func renderDoctor(w io.Writer, st *runorkav1.EnvironmentStatus) {
 	for _, c := range st.Components {
 		status := plainStatus(c.Status)
 		switch c.Status {
-		case runorkav1.Status_CRITICAL:
+		case envorkav1.Status_CRITICAL:
 			critical++
-		case runorkav1.Status_WARNING:
+		case envorkav1.Status_WARNING:
 			warning++
-		case runorkav1.Status_UNKNOWN:
+		case envorkav1.Status_UNKNOWN:
 			unknown++
 		}
 		f("  %-22s%-10s%s", c.Id, decorateStatus(c.Status, status), c.Summary)
@@ -89,8 +89,8 @@ func renderDoctor(w io.Writer, st *runorkav1.EnvironmentStatus) {
 	for _, c := range st.Components {
 		if c.SafeToFix {
 			f("  %s: %s", c.Id, c.Recommendation)
-			f("  Runorka can fix this. Run 'runorka repair' to apply the repair.")
-		} else if c.Status == runorkav1.Status_WARNING || c.Status == runorkav1.Status_CRITICAL {
+			f("  Envorka can fix this. Run 'envorka repair' to apply the repair.")
+		} else if c.Status == envorkav1.Status_WARNING || c.Status == envorkav1.Status_CRITICAL {
 			if c.Recommendation != "" {
 				f("  %s: %s", c.Id, c.Recommendation)
 			}
@@ -98,8 +98,8 @@ func renderDoctor(w io.Writer, st *runorkav1.EnvironmentStatus) {
 	}
 }
 
-func doctorDetails(c *runorkav1.ComponentStatus) []string {
-	if c.Status != runorkav1.Status_WARNING && c.Status != runorkav1.Status_CRITICAL {
+func doctorDetails(c *envorkav1.ComponentStatus) []string {
+	if c.Status != envorkav1.Status_WARNING && c.Status != envorkav1.Status_CRITICAL {
 		return nil
 	}
 	var out []string

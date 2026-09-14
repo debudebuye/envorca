@@ -28,10 +28,10 @@ func DefaultRunner() Runner {
 	}
 }
 
-// wslExe returns the wsl executable name, honoring RUNORKA_WSL_EXE for tests
+// wslExe returns the wsl executable name, honoring ENVORKA_WSL_EXE for tests
 // and unusual setups.
 func wslExe() string {
-	if e := os.Getenv("RUNORKA_WSL_EXE"); e != "" {
+	if e := os.Getenv("ENVORKA_WSL_EXE"); e != "" {
 		return e
 	}
 	return "wsl.exe"
@@ -112,7 +112,7 @@ func KernelVersion(ctx context.Context, run Runner) (string, error) {
 // Boot starts the given distribution (automatic for WSL2) and returns nil
 // once a command inside it succeeds.
 func Boot(ctx context.Context, run Runner, distro string) error {
-	_, err := run(ctx, "--distribution", distro, "--", "echo", "runorka:boot")
+	_, err := run(ctx, "--distribution", distro, "--", "echo", "envorka:boot")
 	return err
 }
 

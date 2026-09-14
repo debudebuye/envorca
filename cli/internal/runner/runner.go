@@ -11,20 +11,20 @@ import (
 	"path/filepath"
 	"runtime"
 
-	"runorka.dev/runorka/api/ipc"
+	"envorka.dev/envorka/api/ipc"
 )
 
 func daemonName() string {
 	if runtime.GOOS == "windows" {
-		return "runorkad.exe"
+		return "envorkad.exe"
 	}
-	return "runorkad"
+	return "envorkad"
 }
 
-// FindDaemonBinary returns the path to the daemon binary: the RUNORKA_DAEMON_BIN
+// FindDaemonBinary returns the path to the daemon binary: the ENVORKA_DAEMON_BIN
 // override, the CLI's own directory, or PATH.
 func FindDaemonBinary() (string, error) {
-	if p := os.Getenv("RUNORKA_DAEMON_BIN"); p != "" {
+	if p := os.Getenv("ENVORKA_DAEMON_BIN"); p != "" {
 		return p, nil
 	}
 	if exe, err := os.Executable(); err == nil {
@@ -36,7 +36,7 @@ func FindDaemonBinary() (string, error) {
 	if p, err := exec.LookPath(daemonName()); err == nil {
 		return p, nil
 	}
-	return "", errors.New("runorkad binary not found; set RUNORKA_DAEMON_BIN or put runorkad on PATH")
+	return "", errors.New("envorkad binary not found; set ENVORKA_DAEMON_BIN or put envorkad on PATH")
 }
 
 // OpenSpawnLog opens the file that captures daemon output at startup.

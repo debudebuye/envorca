@@ -1,4 +1,4 @@
-// runorkad is the Runorka daemon: the single owner of local infrastructure
+// envorkad is the Envorka daemon: the single owner of local infrastructure
 // state and logic. It runs as a user-session background process (ADR-0002)
 // and serves clients over a user-restricted local IPC channel (ADR-0003).
 package main
@@ -20,22 +20,22 @@ import (
 	grpchealth "google.golang.org/grpc/health"
 	healthpb "google.golang.org/grpc/health/grpc_health_v1"
 
-	runorkav1 "runorka.dev/runorka/api/gen/go/runorka/v1"
-	"runorka.dev/runorka/api/ipc"
-	daemonapi "runorka.dev/runorka/daemon/internal/api"
-	"runorka.dev/runorka/daemon/internal/config"
-	"runorka.dev/runorka/daemon/internal/diagnosis"
-	"runorka.dev/runorka/daemon/internal/events"
-	"runorka.dev/runorka/daemon/internal/logging"
-	"runorka.dev/runorka/daemon/internal/recovery"
-	"runorka.dev/runorka/daemon/internal/state"
-	"runorka.dev/runorka/daemon/internal/version"
-	"runorka.dev/runorka/daemon/internal/wsl"
+	envorkav1 "envorka.dev/envorka/api/gen/go/envorka/v1"
+	"envorka.dev/envorka/api/ipc"
+	daemonapi "envorka.dev/envorka/daemon/internal/api"
+	"envorka.dev/envorka/daemon/internal/config"
+	"envorka.dev/envorka/daemon/internal/diagnosis"
+	"envorka.dev/envorka/daemon/internal/events"
+	"envorka.dev/envorka/daemon/internal/logging"
+	"envorka.dev/envorka/daemon/internal/recovery"
+	"envorka.dev/envorka/daemon/internal/state"
+	"envorka.dev/envorka/daemon/internal/version"
+	"envorka.dev/envorka/daemon/internal/wsl"
 )
 
 func main() {
 	if err := run(); err != nil {
-		fmt.Fprintln(os.Stderr, "runorkad:", err)
+		fmt.Fprintln(os.Stderr, "envorkad:", err)
 		os.Exit(1)
 	}
 }
@@ -90,9 +90,9 @@ func run() error {
 	if err != nil {
 		return fmt.Errorf("diagnosis registry: %w", err)
 	}
-	if err := reg.Register("container_runtime", func(context.Context) runorkav1.ComponentStatus {
-		return runorkav1.ComponentStatus{
-			Status:  runorkav1.Status_UNKNOWN,
+	if err := reg.Register("container_runtime", func(context.Context) envorkav1.ComponentStatus {
+		return envorkav1.ComponentStatus{
+			Status:  envorkav1.Status_UNKNOWN,
 			Summary: "not yet diagnosed",
 		}
 	}); err != nil {
@@ -108,13 +108,13 @@ func run() error {
 	grpcServer := grpc.NewServer()
 	rec := recovery.New(wsl.DefaultRunner())
 	daemonServer := daemonapi.New(logger, bus, reg, rec, endpoint, cancel)
-	runorkav1.RegisterDaemonServer(grpcServer, daemonServer)
+	envorkav1.RegisterDaemonServer(grpcServer, daemonServer)
 	hs := grpchealth.NewServer()
 	hs.SetServingStatus("", healthpb.HealthCheckResponse_SERVING)
-	hs.SetServingStatus("runorka.v1.Daemon", healthpb.HealthCheckResponse_SERVING)
+	hs.SetServingStatus("envorka.v1.Daemon", healthpb.HealthCheckResponse_SERVING)
 	healthpb.RegisterHealthServer(grpcServer, hs)
 
-	pidFile := filepath.Join(cfg.RuntimeDir(), "runorka.pid")
+	pidFile := filepath.Join(cfg.RuntimeDir(), "envorka.pid")
 	if err := os.WriteFile(pidFile, []byte(strconv.Itoa(os.Getpid())), 0o600); err != nil {
 		return fmt.Errorf("write pid file: %w", err)
 	}

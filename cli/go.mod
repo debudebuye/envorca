@@ -1,11 +1,11 @@
-module runorka.dev/runorka/cli
+module envorka.dev/envorka/cli
 
 go 1.27
 
 require (
 	github.com/spf13/cobra v1.10.2
 	google.golang.org/grpc v1.83.2
-	runorka.dev/runorka/api v0.0.0
+	envorka.dev/envorka/api v0.0.0
 )
 
 require (
@@ -19,4 +19,4 @@ require (
 	google.golang.org/protobuf v1.36.12 // indirect
 )
 
-replace runorka.dev/runorka/api => ../api
+replace envorka.dev/envorka/api => ../api

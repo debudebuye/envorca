@@ -12,7 +12,7 @@ define how the daemon is launched or how elevation is handled.
 
 - The daemon is a **user-session background process**, not a Windows Service.
   It is registered to start at logon via Task Scheduler and is otherwise
-  started by `runorka start`.
+  started by `envorka start`.
 - The daemon performs **no elevated operations in V1**. WSL invocations,
   Docker operations inside the distribution, file and SQLite access, and the
   named-pipe listener all run in the interactive user context without
@@ -26,7 +26,7 @@ define how the daemon is launched or how elevation is handled.
 
 - Installing the daemon as a user-session process keeps the IPC surface local
   and avoids the elevation/IPC complexity of a full Windows service.
-- `runorka start`/`runorka stop` manage the daemon lifecycle.
+- `envorka start`/`envorka stop` manage the daemon lifecycle.
 - If a future need (e.g. firewall rules, distribution installation) requires
   elevation, it is added as a narrow privileged helper with its own IPC
   boundary, not by elevating the whole daemon.

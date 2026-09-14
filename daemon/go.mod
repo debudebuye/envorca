@@ -1,4 +1,4 @@
-module runorka.dev/runorka/daemon
+module envorka.dev/envorka/daemon
 
 go 1.27
 
@@ -7,7 +7,7 @@ require (
 	google.golang.org/grpc v1.83.2
 	gopkg.in/yaml.v3 v3.0.1
 	modernc.org/sqlite v1.58.0
-	runorka.dev/runorka/api v0.0.0
+	envorka.dev/envorka/api v0.0.0
 )
 
 require (
@@ -29,4 +29,4 @@ require (
 	modernc.org/memory v1.12.1 // indirect
 )
 
-replace runorka.dev/runorka/api => ../api
+replace envorka.dev/envorka/api => ../api
