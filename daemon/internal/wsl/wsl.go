@@ -24,6 +24,7 @@ type Runner func(ctx context.Context, args ...string) ([]byte, error)
 func DefaultRunner() Runner {
 	return func(ctx context.Context, args ...string) ([]byte, error) {
 		cmd := exec.CommandContext(ctx, wslExe(), args...)
+		hideConsole(cmd)
 		return cmd.Output()
 	}
 }

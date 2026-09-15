@@ -1,0 +1,61 @@
+name: release
+
+on:
+  push:
+    branches: [main]
+
+permissions:
+  contents: write
+
+jobs:
+  windows-zip:
+    runs-on: ubuntu-latest
+    concurrency:
+      group: envorca-nightly-release
+      cancel-in-progress: false
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-go@v5
+        with:
+          go-version: '1.27'
+
+      - uses: actions/cache@v4
+        with:
+          path: |
+            ~/.cache/go-build
+            ~/go/pkg/mod
+          key: go-${{ runner.os }}-${{ hashFiles('**/go.sum') }}
+
+      - name: Sync workspace
+        run: go work sync
+
+      - name: Cross-compile Windows binaries
+        run: |
+          mkdir -p bin
+          (cd daemon && CGO_ENABLED=0 GOOS=windows GOARCH=amd64 go build -ldflags "-s -w" -o ../bin/envorcad.exe ./cmd/envorcad)
+          (cd cli && CGO_ENABLED=0 GOOS=windows GOARCH=amd64 go build -ldflags "-s -w" -o ../bin/envorca.exe ./cmd/envorca)
+
+      - name: Package zip
+        run: |
+          zip -j envorca-windows-amd64.zip bin/envorca.exe bin/envorcad.exe
+          unzip -l envorca-windows-amd64.zip
+
+      - name: Publish rolling release
+        run: |
+          gh release delete nightly --yes --cleanup-tag || true
+          gh release create nightly envorca-windows-amd64.zip \
+            --title "Envorca Nightly Build" \
+            --prerelease \
+            --target "$GITHUB_SHA" \
+            --notes "Automated build from \`main\` @ $GITHUB_SHA.
+
+Download the zip, unzip it, and run:
+
+\`\`\`
+envorca.exe start
+envorca.exe doctor
+envorca.exe stop
+\`\`\`
+
+Keep \`envorca.exe\` and \`envorcad.exe\` together in the same folder."

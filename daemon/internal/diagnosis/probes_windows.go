@@ -8,6 +8,7 @@ import (
 	"errors"
 	"fmt"
 	"os/exec"
+	"syscall"
 	"unsafe"
 
 	"golang.org/x/sys/windows"
@@ -126,7 +127,9 @@ const scServiceNotInstalled = 1060
 // is not installed returns (false, false, nil); other failures return an
 // error so callers can fall back to a generic diagnosis.
 func serviceState(ctx context.Context, name string) (installed, running bool, err error) {
-	out, err := exec.CommandContext(ctx, "sc.exe", "query", name).CombinedOutput()
+	cmd := exec.CommandContext(ctx, "sc.exe", "query", name)
+	cmd.SysProcAttr = &syscall.SysProcAttr{CreationFlags: 0x08000000} // CREATE_NO_WINDOW
+	out, err := cmd.CombinedOutput()
 	if err != nil {
 		var ee *exec.ExitError
 		if errors.As(err, &ee) && ee.ExitCode() == scServiceNotInstalled {
