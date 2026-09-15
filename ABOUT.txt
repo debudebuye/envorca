@@ -1,0 +1,46 @@
+ENVORCA
+=======
+
+Linux development on Windows just works.
+
+Envorca is a Windows-first developer infrastructure daemon for WSL2 /
+Docker. It runs as a lightweight background process, watches your Linux
+development stack, explains what is broken in plain language, and repairs
+it safely. No admin rights required.
+
+WHAT IT DOES
+  doctor    diagnose the whole WSL2 + Docker environment (7 health probes)
+  repair    propose and apply safe fixes, with confirmation
+  status    quick overall health overview
+  events    stream daemon events in real time
+  history   recorded diagnostics and repairs (local SQLite)
+  start     launch the daemon (named pipe IPC, no TCP)
+  stop      shut the daemon down
+
+DOWNLOAD & RUN
+  Grab the release asset 'envorca-windows-amd64.zip' (not "Source code"),
+  unzip it, keep envorca.exe + envorcad.exe in the same folder, and run:
+    envorca.exe start
+    envorca.exe doctor
+    envorca.exe stop
+
+REQUIREMENTS
+  Windows 10/11 with WSL2 enabled (wsl --install -d Ubuntu).
+  Docker optional (Docker Desktop or docker CLI inside the distro).
+
+REPOSITORY
+  Go workspace, three modules:
+    api/      gRPC contract + IPC transport (named pipe / unix socket)
+    daemon/   envorcad - all infrastructure logic (WSL2, Docker, probes,
+              repairs, history, events)
+    cli/      envorca - thin Cobra client, zero infrastructure logic
+  endpoints the daemon exposes: binary, no Go runtime needed at runtime.
+
+CI/CD
+  Every push to main rebuilds the Windows binaries and publishes an
+  updated 'envorca-windows-amd64.zip' to the rolling 'nightly' release.
+
+LICENSE
+  Apache License, Version 2.0.
+  Copyright 2024-2026 debudebuye.
+  https://github.com/debudebuye/envorca
