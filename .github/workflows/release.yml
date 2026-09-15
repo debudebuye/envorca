@@ -48,14 +48,4 @@ jobs:
             --title "Envorca Nightly Build" \
             --prerelease \
             --target "$GITHUB_SHA" \
-            --notes "Automated build from \`main\` @ $GITHUB_SHA.
-
-Download the zip, unzip it, and run:
-
-\`\`\`
-envorca.exe start
-envorca.exe doctor
-envorca.exe stop
-\`\`\`
-
-Keep \`envorca.exe\` and \`envorcad.exe\` together in the same folder."
+            --notes "Automated nightly build from $(git rev-parse --short HEAD). Unzip and run 'envorca.exe start', then 'envorca.exe doctor'. Keep both EXEs in the same folder."
