@@ -31,7 +31,7 @@ var statusCmd = &cobra.Command{
 			return fmt.Errorf("connect: %w", err)
 		}
 		defer conn.Close()
-		st, err := client.GetStatus(ctx, conn, 5*time.Second)
+		st, err := client.GetStatus(ctx, conn, 15*time.Second)
 		if err != nil {
 			return fmt.Errorf("get status: %w", err)
 		}

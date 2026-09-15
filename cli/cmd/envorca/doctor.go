@@ -30,7 +30,7 @@ var doctorCmd = &cobra.Command{
 			return fmt.Errorf("connect: %w", err)
 		}
 		defer conn.Close()
-		st, err := client.GetStatus(ctx, conn, 8*time.Second)
+		st, err := client.GetStatus(ctx, conn, 20*time.Second)
 		if err != nil {
 			return fmt.Errorf("get status: %w", err)
 		}
