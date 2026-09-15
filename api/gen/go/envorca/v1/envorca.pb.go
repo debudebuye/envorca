@@ -692,6 +692,464 @@ func (x *RepairOutcome) GetVerification() string {
 	return ""
 }
 
+type StreamEventsRequest struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// replay controls whether the daemon's retained event buffer is sent
+	// before live events. Defaults to true.
+	Replay        bool `protobuf:"varint,1,opt,name=replay,proto3" json:"replay,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *StreamEventsRequest) Reset() {
+	*x = StreamEventsRequest{}
+	mi := &file_envorca_v1_envorca_proto_msgTypes[10]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *StreamEventsRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*StreamEventsRequest) ProtoMessage() {}
+
+func (x *StreamEventsRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_envorca_v1_envorca_proto_msgTypes[10]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use StreamEventsRequest.ProtoReflect.Descriptor instead.
+func (*StreamEventsRequest) Descriptor() ([]byte, []int) {
+	return file_envorca_v1_envorca_proto_rawDescGZIP(), []int{10}
+}
+
+func (x *StreamEventsRequest) GetReplay() bool {
+	if x != nil {
+		return x.Replay
+	}
+	return false
+}
+
+type Event struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Seq           uint64                 `protobuf:"varint,1,opt,name=seq,proto3" json:"seq,omitempty"`            // monotonically increasing daemon-wide sequence
+	Timestamp     string                 `protobuf:"bytes,2,opt,name=timestamp,proto3" json:"timestamp,omitempty"` // RFC3339 UTC
+	Level         string                 `protobuf:"bytes,3,opt,name=level,proto3" json:"level,omitempty"`         // debug | info | warn | error
+	Component     string                 `protobuf:"bytes,4,opt,name=component,proto3" json:"component,omitempty"` // daemon | recovery | wsl | ...
+	Name          string                 `protobuf:"bytes,5,opt,name=name,proto3" json:"name,omitempty"`           // event name, e.g. started, repair_executed
+	Project       string                 `protobuf:"bytes,6,opt,name=project,proto3" json:"project,omitempty"`
+	Fields        map[string]string      `protobuf:"bytes,7,rep,name=fields,proto3" json:"fields,omitempty" protobuf_key:"bytes,1,opt,name=key" protobuf_val:"bytes,2,opt,name=value"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *Event) Reset() {
+	*x = Event{}
+	mi := &file_envorca_v1_envorca_proto_msgTypes[11]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *Event) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*Event) ProtoMessage() {}
+
+func (x *Event) ProtoReflect() protoreflect.Message {
+	mi := &file_envorca_v1_envorca_proto_msgTypes[11]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use Event.ProtoReflect.Descriptor instead.
+func (*Event) Descriptor() ([]byte, []int) {
+	return file_envorca_v1_envorca_proto_rawDescGZIP(), []int{11}
+}
+
+func (x *Event) GetSeq() uint64 {
+	if x != nil {
+		return x.Seq
+	}
+	return 0
+}
+
+func (x *Event) GetTimestamp() string {
+	if x != nil {
+		return x.Timestamp
+	}
+	return ""
+}
+
+func (x *Event) GetLevel() string {
+	if x != nil {
+		return x.Level
+	}
+	return ""
+}
+
+func (x *Event) GetComponent() string {
+	if x != nil {
+		return x.Component
+	}
+	return ""
+}
+
+func (x *Event) GetName() string {
+	if x != nil {
+		return x.Name
+	}
+	return ""
+}
+
+func (x *Event) GetProject() string {
+	if x != nil {
+		return x.Project
+	}
+	return ""
+}
+
+func (x *Event) GetFields() map[string]string {
+	if x != nil {
+		return x.Fields
+	}
+	return nil
+}
+
+type GetDiagnosticsRequest struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Limit         int32                  `protobuf:"varint,1,opt,name=limit,proto3" json:"limit,omitempty"` // max records to return (default 20, clamped to [1,500])
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *GetDiagnosticsRequest) Reset() {
+	*x = GetDiagnosticsRequest{}
+	mi := &file_envorca_v1_envorca_proto_msgTypes[12]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *GetDiagnosticsRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*GetDiagnosticsRequest) ProtoMessage() {}
+
+func (x *GetDiagnosticsRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_envorca_v1_envorca_proto_msgTypes[12]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use GetDiagnosticsRequest.ProtoReflect.Descriptor instead.
+func (*GetDiagnosticsRequest) Descriptor() ([]byte, []int) {
+	return file_envorca_v1_envorca_proto_rawDescGZIP(), []int{12}
+}
+
+func (x *GetDiagnosticsRequest) GetLimit() int32 {
+	if x != nil {
+		return x.Limit
+	}
+	return 0
+}
+
+type DiagnosticRecord struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	PerformedAt   string                 `protobuf:"bytes,1,opt,name=performed_at,json=performedAt,proto3" json:"performed_at,omitempty"` // RFC3339 UTC
+	OverallStatus string                 `protobuf:"bytes,2,opt,name=overall_status,json=overallStatus,proto3" json:"overall_status,omitempty"`
+	Payload       string                 `protobuf:"bytes,3,opt,name=payload,proto3" json:"payload,omitempty"` // JSON-encoded EnvironmentStatus snapshot
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *DiagnosticRecord) Reset() {
+	*x = DiagnosticRecord{}
+	mi := &file_envorca_v1_envorca_proto_msgTypes[13]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *DiagnosticRecord) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*DiagnosticRecord) ProtoMessage() {}
+
+func (x *DiagnosticRecord) ProtoReflect() protoreflect.Message {
+	mi := &file_envorca_v1_envorca_proto_msgTypes[13]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use DiagnosticRecord.ProtoReflect.Descriptor instead.
+func (*DiagnosticRecord) Descriptor() ([]byte, []int) {
+	return file_envorca_v1_envorca_proto_rawDescGZIP(), []int{13}
+}
+
+func (x *DiagnosticRecord) GetPerformedAt() string {
+	if x != nil {
+		return x.PerformedAt
+	}
+	return ""
+}
+
+func (x *DiagnosticRecord) GetOverallStatus() string {
+	if x != nil {
+		return x.OverallStatus
+	}
+	return ""
+}
+
+func (x *DiagnosticRecord) GetPayload() string {
+	if x != nil {
+		return x.Payload
+	}
+	return ""
+}
+
+type GetDiagnosticsResponse struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Diagnostics   []*DiagnosticRecord    `protobuf:"bytes,1,rep,name=diagnostics,proto3" json:"diagnostics,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *GetDiagnosticsResponse) Reset() {
+	*x = GetDiagnosticsResponse{}
+	mi := &file_envorca_v1_envorca_proto_msgTypes[14]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *GetDiagnosticsResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*GetDiagnosticsResponse) ProtoMessage() {}
+
+func (x *GetDiagnosticsResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_envorca_v1_envorca_proto_msgTypes[14]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use GetDiagnosticsResponse.ProtoReflect.Descriptor instead.
+func (*GetDiagnosticsResponse) Descriptor() ([]byte, []int) {
+	return file_envorca_v1_envorca_proto_rawDescGZIP(), []int{14}
+}
+
+func (x *GetDiagnosticsResponse) GetDiagnostics() []*DiagnosticRecord {
+	if x != nil {
+		return x.Diagnostics
+	}
+	return nil
+}
+
+type GetRepairHistoryRequest struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Limit         int32                  `protobuf:"varint,1,opt,name=limit,proto3" json:"limit,omitempty"` // max records to return (default 20, clamped to [1,500])
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *GetRepairHistoryRequest) Reset() {
+	*x = GetRepairHistoryRequest{}
+	mi := &file_envorca_v1_envorca_proto_msgTypes[15]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *GetRepairHistoryRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*GetRepairHistoryRequest) ProtoMessage() {}
+
+func (x *GetRepairHistoryRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_envorca_v1_envorca_proto_msgTypes[15]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use GetRepairHistoryRequest.ProtoReflect.Descriptor instead.
+func (*GetRepairHistoryRequest) Descriptor() ([]byte, []int) {
+	return file_envorca_v1_envorca_proto_rawDescGZIP(), []int{15}
+}
+
+func (x *GetRepairHistoryRequest) GetLimit() int32 {
+	if x != nil {
+		return x.Limit
+	}
+	return 0
+}
+
+type RepairRecord struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	PerformedAt   string                 `protobuf:"bytes,1,opt,name=performed_at,json=performedAt,proto3" json:"performed_at,omitempty"` // RFC3339 UTC
+	ActionId      string                 `protobuf:"bytes,2,opt,name=action_id,json=actionId,proto3" json:"action_id,omitempty"`
+	ComponentId   string                 `protobuf:"bytes,3,opt,name=component_id,json=componentId,proto3" json:"component_id,omitempty"`
+	Success       bool                   `protobuf:"varint,4,opt,name=success,proto3" json:"success,omitempty"`
+	Result        string                 `protobuf:"bytes,5,opt,name=result,proto3" json:"result,omitempty"`
+	Verification  string                 `protobuf:"bytes,6,opt,name=verification,proto3" json:"verification,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *RepairRecord) Reset() {
+	*x = RepairRecord{}
+	mi := &file_envorca_v1_envorca_proto_msgTypes[16]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *RepairRecord) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*RepairRecord) ProtoMessage() {}
+
+func (x *RepairRecord) ProtoReflect() protoreflect.Message {
+	mi := &file_envorca_v1_envorca_proto_msgTypes[16]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use RepairRecord.ProtoReflect.Descriptor instead.
+func (*RepairRecord) Descriptor() ([]byte, []int) {
+	return file_envorca_v1_envorca_proto_rawDescGZIP(), []int{16}
+}
+
+func (x *RepairRecord) GetPerformedAt() string {
+	if x != nil {
+		return x.PerformedAt
+	}
+	return ""
+}
+
+func (x *RepairRecord) GetActionId() string {
+	if x != nil {
+		return x.ActionId
+	}
+	return ""
+}
+
+func (x *RepairRecord) GetComponentId() string {
+	if x != nil {
+		return x.ComponentId
+	}
+	return ""
+}
+
+func (x *RepairRecord) GetSuccess() bool {
+	if x != nil {
+		return x.Success
+	}
+	return false
+}
+
+func (x *RepairRecord) GetResult() string {
+	if x != nil {
+		return x.Result
+	}
+	return ""
+}
+
+func (x *RepairRecord) GetVerification() string {
+	if x != nil {
+		return x.Verification
+	}
+	return ""
+}
+
+type GetRepairHistoryResponse struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Repairs       []*RepairRecord        `protobuf:"bytes,1,rep,name=repairs,proto3" json:"repairs,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *GetRepairHistoryResponse) Reset() {
+	*x = GetRepairHistoryResponse{}
+	mi := &file_envorca_v1_envorca_proto_msgTypes[17]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *GetRepairHistoryResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*GetRepairHistoryResponse) ProtoMessage() {}
+
+func (x *GetRepairHistoryResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_envorca_v1_envorca_proto_msgTypes[17]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use GetRepairHistoryResponse.ProtoReflect.Descriptor instead.
+func (*GetRepairHistoryResponse) Descriptor() ([]byte, []int) {
+	return file_envorca_v1_envorca_proto_rawDescGZIP(), []int{17}
+}
+
+func (x *GetRepairHistoryResponse) GetRepairs() []*RepairRecord {
+	if x != nil {
+		return x.Repairs
+	}
+	return nil
+}
+
 type ShutdownRequest struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	unknownFields protoimpl.UnknownFields
@@ -700,7 +1158,7 @@ type ShutdownRequest struct {
 
 func (x *ShutdownRequest) Reset() {
 	*x = ShutdownRequest{}
-	mi := &file_envorca_v1_envorca_proto_msgTypes[10]
+	mi := &file_envorca_v1_envorca_proto_msgTypes[18]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -712,7 +1170,7 @@ func (x *ShutdownRequest) String() string {
 func (*ShutdownRequest) ProtoMessage() {}
 
 func (x *ShutdownRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_envorca_v1_envorca_proto_msgTypes[10]
+	mi := &file_envorca_v1_envorca_proto_msgTypes[18]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -725,7 +1183,7 @@ func (x *ShutdownRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ShutdownRequest.ProtoReflect.Descriptor instead.
 func (*ShutdownRequest) Descriptor() ([]byte, []int) {
-	return file_envorca_v1_envorca_proto_rawDescGZIP(), []int{10}
+	return file_envorca_v1_envorca_proto_rawDescGZIP(), []int{18}
 }
 
 type ShutdownResponse struct {
@@ -736,7 +1194,7 @@ type ShutdownResponse struct {
 
 func (x *ShutdownResponse) Reset() {
 	*x = ShutdownResponse{}
-	mi := &file_envorca_v1_envorca_proto_msgTypes[11]
+	mi := &file_envorca_v1_envorca_proto_msgTypes[19]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -748,7 +1206,7 @@ func (x *ShutdownResponse) String() string {
 func (*ShutdownResponse) ProtoMessage() {}
 
 func (x *ShutdownResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_envorca_v1_envorca_proto_msgTypes[11]
+	mi := &file_envorca_v1_envorca_proto_msgTypes[19]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -761,7 +1219,7 @@ func (x *ShutdownResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ShutdownResponse.ProtoReflect.Descriptor instead.
 func (*ShutdownResponse) Descriptor() ([]byte, []int) {
-	return file_envorca_v1_envorca_proto_rawDescGZIP(), []int{11}
+	return file_envorca_v1_envorca_proto_rawDescGZIP(), []int{19}
 }
 
 var File_envorca_v1_envorca_proto protoreflect.FileDescriptor
@@ -814,7 +1272,39 @@ const file_envorca_v1_envorca_proto_rawDesc = "" +
 	"\fcomponent_id\x18\x02 \x01(\tR\vcomponentId\x12\x18\n" +
 	"\asuccess\x18\x03 \x01(\bR\asuccess\x12\x16\n" +
 	"\x06result\x18\x04 \x01(\tR\x06result\x12\"\n" +
-	"\fverification\x18\x05 \x01(\tR\fverification\"\x11\n" +
+	"\fverification\x18\x05 \x01(\tR\fverification\"-\n" +
+	"\x13StreamEventsRequest\x12\x16\n" +
+	"\x06replay\x18\x01 \x01(\bR\x06replay\"\x8b\x02\n" +
+	"\x05Event\x12\x10\n" +
+	"\x03seq\x18\x01 \x01(\x04R\x03seq\x12\x1c\n" +
+	"\ttimestamp\x18\x02 \x01(\tR\ttimestamp\x12\x14\n" +
+	"\x05level\x18\x03 \x01(\tR\x05level\x12\x1c\n" +
+	"\tcomponent\x18\x04 \x01(\tR\tcomponent\x12\x12\n" +
+	"\x04name\x18\x05 \x01(\tR\x04name\x12\x18\n" +
+	"\aproject\x18\x06 \x01(\tR\aproject\x125\n" +
+	"\x06fields\x18\a \x03(\v2\x1d.envorca.v1.Event.FieldsEntryR\x06fields\x1a9\n" +
+	"\vFieldsEntry\x12\x10\n" +
+	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
+	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01\"-\n" +
+	"\x15GetDiagnosticsRequest\x12\x14\n" +
+	"\x05limit\x18\x01 \x01(\x05R\x05limit\"v\n" +
+	"\x10DiagnosticRecord\x12!\n" +
+	"\fperformed_at\x18\x01 \x01(\tR\vperformedAt\x12%\n" +
+	"\x0eoverall_status\x18\x02 \x01(\tR\roverallStatus\x12\x18\n" +
+	"\apayload\x18\x03 \x01(\tR\apayload\"X\n" +
+	"\x16GetDiagnosticsResponse\x12>\n" +
+	"\vdiagnostics\x18\x01 \x03(\v2\x1c.envorca.v1.DiagnosticRecordR\vdiagnostics\"/\n" +
+	"\x17GetRepairHistoryRequest\x12\x14\n" +
+	"\x05limit\x18\x01 \x01(\x05R\x05limit\"\xc7\x01\n" +
+	"\fRepairRecord\x12!\n" +
+	"\fperformed_at\x18\x01 \x01(\tR\vperformedAt\x12\x1b\n" +
+	"\taction_id\x18\x02 \x01(\tR\bactionId\x12!\n" +
+	"\fcomponent_id\x18\x03 \x01(\tR\vcomponentId\x12\x18\n" +
+	"\asuccess\x18\x04 \x01(\bR\asuccess\x12\x16\n" +
+	"\x06result\x18\x05 \x01(\tR\x06result\x12\"\n" +
+	"\fverification\x18\x06 \x01(\tR\fverification\"N\n" +
+	"\x18GetRepairHistoryResponse\x122\n" +
+	"\arepairs\x18\x01 \x03(\v2\x18.envorca.v1.RepairRecordR\arepairs\"\x11\n" +
 	"\x0fShutdownRequest\"\x12\n" +
 	"\x10ShutdownResponse*U\n" +
 	"\x06Status\x12\x16\n" +
@@ -822,12 +1312,15 @@ const file_envorca_v1_envorca_proto_rawDesc = "" +
 	"\aHEALTHY\x10\x01\x12\v\n" +
 	"\aWARNING\x10\x02\x12\f\n" +
 	"\bCRITICAL\x10\x03\x12\v\n" +
-	"\aUNKNOWN\x10\x042\xed\x02\n" +
+	"\aUNKNOWN\x10\x042\xeb\x04\n" +
 	"\x06Daemon\x129\n" +
 	"\x04Ping\x12\x17.envorca.v1.PingRequest\x1a\x18.envorca.v1.PingResponse\x12H\n" +
 	"\tGetStatus\x12\x1c.envorca.v1.GetStatusRequest\x1a\x1d.envorca.v1.EnvironmentStatus\x12I\n" +
 	"\rGetRepairPlan\x12 .envorca.v1.GetRepairPlanRequest\x1a\x16.envorca.v1.RepairPlan\x12L\n" +
-	"\rExecuteRepair\x12 .envorca.v1.ExecuteRepairRequest\x1a\x19.envorca.v1.RepairOutcome\x12E\n" +
+	"\rExecuteRepair\x12 .envorca.v1.ExecuteRepairRequest\x1a\x19.envorca.v1.RepairOutcome\x12D\n" +
+	"\fStreamEvents\x12\x1f.envorca.v1.StreamEventsRequest\x1a\x11.envorca.v1.Event0\x01\x12W\n" +
+	"\x0eGetDiagnostics\x12!.envorca.v1.GetDiagnosticsRequest\x1a\".envorca.v1.GetDiagnosticsResponse\x12]\n" +
+	"\x10GetRepairHistory\x12#.envorca.v1.GetRepairHistoryRequest\x1a$.envorca.v1.GetRepairHistoryResponse\x12E\n" +
 	"\bShutdown\x12\x1b.envorca.v1.ShutdownRequest\x1a\x1c.envorca.v1.ShutdownResponseB5Z3envorca.dev/envorca/api/gen/go/envorca/v1;envorcav1b\x06proto3"
 
 var (
@@ -843,42 +1336,60 @@ func file_envorca_v1_envorca_proto_rawDescGZIP() []byte {
 }
 
 var file_envorca_v1_envorca_proto_enumTypes = make([]protoimpl.EnumInfo, 1)
-var file_envorca_v1_envorca_proto_msgTypes = make([]protoimpl.MessageInfo, 12)
+var file_envorca_v1_envorca_proto_msgTypes = make([]protoimpl.MessageInfo, 21)
 var file_envorca_v1_envorca_proto_goTypes = []any{
-	(Status)(0),                  // 0: envorca.v1.Status
-	(*PingRequest)(nil),          // 1: envorca.v1.PingRequest
-	(*PingResponse)(nil),         // 2: envorca.v1.PingResponse
-	(*ComponentStatus)(nil),      // 3: envorca.v1.ComponentStatus
-	(*GetStatusRequest)(nil),     // 4: envorca.v1.GetStatusRequest
-	(*EnvironmentStatus)(nil),    // 5: envorca.v1.EnvironmentStatus
-	(*GetRepairPlanRequest)(nil), // 6: envorca.v1.GetRepairPlanRequest
-	(*RepairAction)(nil),         // 7: envorca.v1.RepairAction
-	(*RepairPlan)(nil),           // 8: envorca.v1.RepairPlan
-	(*ExecuteRepairRequest)(nil), // 9: envorca.v1.ExecuteRepairRequest
-	(*RepairOutcome)(nil),        // 10: envorca.v1.RepairOutcome
-	(*ShutdownRequest)(nil),      // 11: envorca.v1.ShutdownRequest
-	(*ShutdownResponse)(nil),     // 12: envorca.v1.ShutdownResponse
+	(Status)(0),                      // 0: envorca.v1.Status
+	(*PingRequest)(nil),              // 1: envorca.v1.PingRequest
+	(*PingResponse)(nil),             // 2: envorca.v1.PingResponse
+	(*ComponentStatus)(nil),          // 3: envorca.v1.ComponentStatus
+	(*GetStatusRequest)(nil),         // 4: envorca.v1.GetStatusRequest
+	(*EnvironmentStatus)(nil),        // 5: envorca.v1.EnvironmentStatus
+	(*GetRepairPlanRequest)(nil),     // 6: envorca.v1.GetRepairPlanRequest
+	(*RepairAction)(nil),             // 7: envorca.v1.RepairAction
+	(*RepairPlan)(nil),               // 8: envorca.v1.RepairPlan
+	(*ExecuteRepairRequest)(nil),     // 9: envorca.v1.ExecuteRepairRequest
+	(*RepairOutcome)(nil),            // 10: envorca.v1.RepairOutcome
+	(*StreamEventsRequest)(nil),      // 11: envorca.v1.StreamEventsRequest
+	(*Event)(nil),                    // 12: envorca.v1.Event
+	(*GetDiagnosticsRequest)(nil),    // 13: envorca.v1.GetDiagnosticsRequest
+	(*DiagnosticRecord)(nil),         // 14: envorca.v1.DiagnosticRecord
+	(*GetDiagnosticsResponse)(nil),   // 15: envorca.v1.GetDiagnosticsResponse
+	(*GetRepairHistoryRequest)(nil),  // 16: envorca.v1.GetRepairHistoryRequest
+	(*RepairRecord)(nil),             // 17: envorca.v1.RepairRecord
+	(*GetRepairHistoryResponse)(nil), // 18: envorca.v1.GetRepairHistoryResponse
+	(*ShutdownRequest)(nil),          // 19: envorca.v1.ShutdownRequest
+	(*ShutdownResponse)(nil),         // 20: envorca.v1.ShutdownResponse
+	nil,                              // 21: envorca.v1.Event.FieldsEntry
 }
 var file_envorca_v1_envorca_proto_depIdxs = []int32{
 	0,  // 0: envorca.v1.ComponentStatus.status:type_name -> envorca.v1.Status
 	0,  // 1: envorca.v1.EnvironmentStatus.overall_status:type_name -> envorca.v1.Status
 	3,  // 2: envorca.v1.EnvironmentStatus.components:type_name -> envorca.v1.ComponentStatus
 	7,  // 3: envorca.v1.RepairPlan.actions:type_name -> envorca.v1.RepairAction
-	1,  // 4: envorca.v1.Daemon.Ping:input_type -> envorca.v1.PingRequest
-	4,  // 5: envorca.v1.Daemon.GetStatus:input_type -> envorca.v1.GetStatusRequest
-	6,  // 6: envorca.v1.Daemon.GetRepairPlan:input_type -> envorca.v1.GetRepairPlanRequest
-	9,  // 7: envorca.v1.Daemon.ExecuteRepair:input_type -> envorca.v1.ExecuteRepairRequest
-	11, // 8: envorca.v1.Daemon.Shutdown:input_type -> envorca.v1.ShutdownRequest
-	2,  // 9: envorca.v1.Daemon.Ping:output_type -> envorca.v1.PingResponse
-	5,  // 10: envorca.v1.Daemon.GetStatus:output_type -> envorca.v1.EnvironmentStatus
-	8,  // 11: envorca.v1.Daemon.GetRepairPlan:output_type -> envorca.v1.RepairPlan
-	10, // 12: envorca.v1.Daemon.ExecuteRepair:output_type -> envorca.v1.RepairOutcome
-	12, // 13: envorca.v1.Daemon.Shutdown:output_type -> envorca.v1.ShutdownResponse
-	9,  // [9:14] is the sub-list for method output_type
-	4,  // [4:9] is the sub-list for method input_type
-	4,  // [4:4] is the sub-list for extension type_name
-	4,  // [4:4] is the sub-list for extension extendee
-	0,  // [0:4] is the sub-list for field type_name
+	21, // 4: envorca.v1.Event.fields:type_name -> envorca.v1.Event.FieldsEntry
+	14, // 5: envorca.v1.GetDiagnosticsResponse.diagnostics:type_name -> envorca.v1.DiagnosticRecord
+	17, // 6: envorca.v1.GetRepairHistoryResponse.repairs:type_name -> envorca.v1.RepairRecord
+	1,  // 7: envorca.v1.Daemon.Ping:input_type -> envorca.v1.PingRequest
+	4,  // 8: envorca.v1.Daemon.GetStatus:input_type -> envorca.v1.GetStatusRequest
+	6,  // 9: envorca.v1.Daemon.GetRepairPlan:input_type -> envorca.v1.GetRepairPlanRequest
+	9,  // 10: envorca.v1.Daemon.ExecuteRepair:input_type -> envorca.v1.ExecuteRepairRequest
+	11, // 11: envorca.v1.Daemon.StreamEvents:input_type -> envorca.v1.StreamEventsRequest
+	13, // 12: envorca.v1.Daemon.GetDiagnostics:input_type -> envorca.v1.GetDiagnosticsRequest
+	16, // 13: envorca.v1.Daemon.GetRepairHistory:input_type -> envorca.v1.GetRepairHistoryRequest
+	19, // 14: envorca.v1.Daemon.Shutdown:input_type -> envorca.v1.ShutdownRequest
+	2,  // 15: envorca.v1.Daemon.Ping:output_type -> envorca.v1.PingResponse
+	5,  // 16: envorca.v1.Daemon.GetStatus:output_type -> envorca.v1.EnvironmentStatus
+	8,  // 17: envorca.v1.Daemon.GetRepairPlan:output_type -> envorca.v1.RepairPlan
+	10, // 18: envorca.v1.Daemon.ExecuteRepair:output_type -> envorca.v1.RepairOutcome
+	12, // 19: envorca.v1.Daemon.StreamEvents:output_type -> envorca.v1.Event
+	15, // 20: envorca.v1.Daemon.GetDiagnostics:output_type -> envorca.v1.GetDiagnosticsResponse
+	18, // 21: envorca.v1.Daemon.GetRepairHistory:output_type -> envorca.v1.GetRepairHistoryResponse
+	20, // 22: envorca.v1.Daemon.Shutdown:output_type -> envorca.v1.ShutdownResponse
+	15, // [15:23] is the sub-list for method output_type
+	7,  // [7:15] is the sub-list for method input_type
+	7,  // [7:7] is the sub-list for extension type_name
+	7,  // [7:7] is the sub-list for extension extendee
+	0,  // [0:7] is the sub-list for field type_name
 }
 
 func init() { file_envorca_v1_envorca_proto_init() }
@@ -892,7 +1403,7 @@ func file_envorca_v1_envorca_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_envorca_v1_envorca_proto_rawDesc), len(file_envorca_v1_envorca_proto_rawDesc)),
 			NumEnums:      1,
-			NumMessages:   12,
+			NumMessages:   21,
 			NumExtensions: 0,
 			NumServices:   1,
 		},

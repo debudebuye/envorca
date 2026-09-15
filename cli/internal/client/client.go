@@ -39,6 +39,13 @@ func Probe(ctx context.Context, endpoint string) bool {
 	return err == nil
 }
 
+// Ping returns daemon identity and liveness.
+func Ping(ctx context.Context, conn *grpc.ClientConn, timeout time.Duration) (*envorcav1.PingResponse, error) {
+	c, cancel := context.WithTimeout(ctx, timeout)
+	defer cancel()
+	return envorcav1.NewDaemonClient(conn).Ping(c, &envorcav1.PingRequest{})
+}
+
 // GetStatus returns the current environment status.
 func GetStatus(ctx context.Context, conn *grpc.ClientConn, timeout time.Duration) (*envorcav1.EnvironmentStatus, error) {
 	c, cancel := context.WithTimeout(ctx, timeout)
@@ -61,6 +68,34 @@ func ExecuteRepair(ctx context.Context, conn *grpc.ClientConn, actionID string, 
 		ActionId:  actionID,
 		Confirmed: confirmed,
 	})
+}
+
+// StreamEvents opens a server-streaming channel of daemon events. replay
+// controls whether the daemon sends its retained buffer before live events.
+func StreamEvents(ctx context.Context, conn *grpc.ClientConn, replay bool) (envorcav1.Daemon_StreamEventsClient, error) {
+	return envorcav1.NewDaemonClient(conn).StreamEvents(ctx, &envorcav1.StreamEventsRequest{Replay: replay})
+}
+
+// GetDiagnostics returns recently recorded diagnostic snapshots.
+func GetDiagnostics(ctx context.Context, conn *grpc.ClientConn, limit int32, timeout time.Duration) ([]*envorcav1.DiagnosticRecord, error) {
+	c, cancel := context.WithTimeout(ctx, timeout)
+	defer cancel()
+	resp, err := envorcav1.NewDaemonClient(conn).GetDiagnostics(c, &envorcav1.GetDiagnosticsRequest{Limit: limit})
+	if err != nil {
+		return nil, err
+	}
+	return resp.Diagnostics, nil
+}
+
+// GetRepairHistory returns recently recorded repair outcomes.
+func GetRepairHistory(ctx context.Context, conn *grpc.ClientConn, limit int32, timeout time.Duration) ([]*envorcav1.RepairRecord, error) {
+	c, cancel := context.WithTimeout(ctx, timeout)
+	defer cancel()
+	resp, err := envorcav1.NewDaemonClient(conn).GetRepairHistory(c, &envorcav1.GetRepairHistoryRequest{Limit: limit})
+	if err != nil {
+		return nil, err
+	}
+	return resp.Repairs, nil
 }
 
 // Shutdown requests a graceful daemon stop.

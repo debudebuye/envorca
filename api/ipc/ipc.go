@@ -15,8 +15,18 @@ import (
 // EnvOverride forces the transport endpoint for tests and unusual setups.
 const EnvOverride = "ENVORCA_SOCKET"
 
+// EnvStateDirOverride forces the state directory used to derive directories
+// and paths. It is honoured by DefaultStateDir only; endpoints derived
+// through DefaultEndpoint prefer EnvOverride.
+const EnvStateDirOverride = "ENVORCA_STATE_DIR"
+
 // DefaultStateDir returns the platform default Envorca state directory.
-func DefaultStateDir() string { return defaultStateDir() }
+func DefaultStateDir() string {
+	if s := os.Getenv(EnvStateDirOverride); s != "" {
+		return s
+	}
+	return defaultStateDir()
+}
 
 // DefaultEndpoint returns the default transport endpoint for a state
 // directory, honoring the ENVORCA_SOCKET override.

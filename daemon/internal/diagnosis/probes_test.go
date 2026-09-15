@@ -34,7 +34,7 @@ func TestRegistryRegistersAllComponents(t *testing.T) {
 	if err != nil {
 		t.Fatalf("Registry: %v", err)
 	}
-	want := []string{"daemon", "windows", "virtualization", "wsl", "linux_kernel", "resources"}
+	want := []string{"daemon", "windows", "virtualization", "wsl", "linux_kernel", "resources", "container_runtime"}
 	comps := reg.Snapshot(context.Background())
 	if len(comps) != len(want) {
 		t.Fatalf("got %d components, want %d", len(comps), len(want))

@@ -9,7 +9,11 @@ import (
 	"github.com/spf13/cobra"
 )
 
-const cliVersion = "0.1.0-dev"
+// cliVersion is the CLI version. Defaults to a dev build; release builds
+// override it via -ldflags, e.g.
+//
+//	go build -ldflags "-X envorca.dev/envorca/cli/cmd/envorca.cliVersion=0.2.0" ./cmd/envorca
+var cliVersion = "0.1.0-dev"
 
 var rootCmd = &cobra.Command{
 	Use:           "envorca",
@@ -19,6 +23,7 @@ var rootCmd = &cobra.Command{
 }
 
 func init() {
+	rootCmd.PersistentFlags().StringVar(&configFile, "config", "", "path to daemon config.yaml (default: ENVORCA_CONFIG)")
 	rootCmd.AddCommand(versionCmd)
 }
 

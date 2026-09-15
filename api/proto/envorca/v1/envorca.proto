@@ -16,6 +16,13 @@ service Daemon {
   // ExecuteRepair runs a repair action. Destructive actions require
   // confirmed = true.
   rpc ExecuteRepair(ExecuteRepairRequest) returns (RepairOutcome);
+  // StreamEvents streams daemon events: the retained replay buffer first
+  // (when replay = true), then live events until the client disconnects.
+  rpc StreamEvents(StreamEventsRequest) returns (stream Event);
+  // GetDiagnostics returns recently recorded diagnostic snapshots.
+  rpc GetDiagnostics(GetDiagnosticsRequest) returns (GetDiagnosticsResponse);
+  // GetRepairHistory returns recently recorded repair outcomes.
+  rpc GetRepairHistory(GetRepairHistoryRequest) returns (GetRepairHistoryResponse);
   // Shutdown requests a graceful daemon stop.
   rpc Shutdown(ShutdownRequest) returns (ShutdownResponse);
 }
@@ -85,6 +92,53 @@ message RepairOutcome {
   bool success = 3;
   string result = 4;
   string verification = 5;
+}
+
+message StreamEventsRequest {
+  // replay controls whether the daemon's retained event buffer is sent
+  // before live events. Defaults to true.
+  bool replay = 1;
+}
+
+message Event {
+  uint64 seq = 1;        // monotonically increasing daemon-wide sequence
+  string timestamp = 2;  // RFC3339 UTC
+  string level = 3;      // debug | info | warn | error
+  string component = 4;  // daemon | recovery | wsl | ...
+  string name = 5;       // event name, e.g. started, repair_executed
+  string project = 6;
+  map<string, string> fields = 7;
+}
+
+message GetDiagnosticsRequest {
+  int32 limit = 1; // max records to return (default 20, clamped to [1,500])
+}
+
+message DiagnosticRecord {
+  string performed_at = 1; // RFC3339 UTC
+  string overall_status = 2;
+  string payload = 3;      // JSON-encoded EnvironmentStatus snapshot
+}
+
+message GetDiagnosticsResponse {
+  repeated DiagnosticRecord diagnostics = 1;
+}
+
+message GetRepairHistoryRequest {
+  int32 limit = 1; // max records to return (default 20, clamped to [1,500])
+}
+
+message RepairRecord {
+  string performed_at = 1; // RFC3339 UTC
+  string action_id = 2;
+  string component_id = 3;
+  bool success = 4;
+  string result = 5;
+  string verification = 6;
+}
+
+message GetRepairHistoryResponse {
+  repeated RepairRecord repairs = 1;
 }
 
 message ShutdownRequest {}

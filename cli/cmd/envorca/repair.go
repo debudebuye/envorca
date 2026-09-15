@@ -9,7 +9,6 @@ import (
 
 	"github.com/spf13/cobra"
 
-	"envorca.dev/envorca/api/ipc"
 	"envorca.dev/envorca/cli/internal/client"
 )
 
@@ -26,7 +25,7 @@ var repairCmd = &cobra.Command{
 		"authorizes them (or --yes is passed).",
 	RunE: func(cmd *cobra.Command, args []string) error {
 		ctx := cmd.Context()
-		endpoint := ipc.DefaultEndpoint(ipc.DefaultStateDir())
+		endpoint := commandEndpoint()
 		if !client.Probe(ctx, endpoint) {
 			return errors.New("Envorca daemon is not running.\nRun 'envorca start' to launch it.")
 		}

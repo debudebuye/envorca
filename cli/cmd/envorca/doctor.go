@@ -9,7 +9,6 @@ import (
 	"github.com/spf13/cobra"
 
 	envorcav1 "envorca.dev/envorca/api/gen/go/envorca/v1"
-	"envorca.dev/envorca/api/ipc"
 	"envorca.dev/envorca/cli/internal/client"
 )
 
@@ -22,7 +21,7 @@ var doctorCmd = &cobra.Command{
 	Short: "Diagnose the development environment",
 	RunE: func(cmd *cobra.Command, args []string) error {
 		ctx := cmd.Context()
-		endpoint := ipc.DefaultEndpoint(ipc.DefaultStateDir())
+		endpoint := commandEndpoint()
 		if !client.Probe(ctx, endpoint) {
 			return errors.New("Envorca daemon is not running.\nRun 'envorca start' to launch it.")
 		}

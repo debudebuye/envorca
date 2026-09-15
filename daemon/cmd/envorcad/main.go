@@ -90,14 +90,6 @@ func run() error {
 	if err != nil {
 		return fmt.Errorf("diagnosis registry: %w", err)
 	}
-	if err := reg.Register("container_runtime", func(context.Context) envorcav1.ComponentStatus {
-		return envorcav1.ComponentStatus{
-			Status:  envorcav1.Status_UNKNOWN,
-			Summary: "not yet diagnosed",
-		}
-	}); err != nil {
-		return err
-	}
 
 	endpoint := cfg.Endpoint()
 	ln, err := ipc.Listen(endpoint)
@@ -107,7 +99,7 @@ func run() error {
 
 	grpcServer := grpc.NewServer()
 	rec := recovery.New(wsl.DefaultRunner())
-	daemonServer := daemonapi.New(logger, bus, reg, rec, endpoint, cancel)
+	daemonServer := daemonapi.New(logger, bus, reg, rec, db, endpoint, cancel)
 	envorcav1.RegisterDaemonServer(grpcServer, daemonServer)
 	hs := grpchealth.NewServer()
 	hs.SetServingStatus("", healthpb.HealthCheckResponse_SERVING)

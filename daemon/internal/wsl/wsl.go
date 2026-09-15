@@ -37,8 +37,13 @@ func wslExe() string {
 	return "wsl.exe"
 }
 
-// Available reports whether wsl.exe can be found on PATH.
+// Available reports whether wsl.exe can be found on PATH. An explicit
+// ENVORCA_WSL_EXE override is trusted so tests can simulate WSL on any
+// platform; a missing executable surfaces downstream as command errors.
 func Available() bool {
+	if os.Getenv("ENVORCA_WSL_EXE") != "" {
+		return true
+	}
 	_, err := exec.LookPath(wslExe())
 	return err == nil
 }

@@ -19,11 +19,14 @@ import (
 const _ = grpc.SupportPackageIsVersion9
 
 const (
-	Daemon_Ping_FullMethodName          = "/envorca.v1.Daemon/Ping"
-	Daemon_GetStatus_FullMethodName     = "/envorca.v1.Daemon/GetStatus"
-	Daemon_GetRepairPlan_FullMethodName = "/envorca.v1.Daemon/GetRepairPlan"
-	Daemon_ExecuteRepair_FullMethodName = "/envorca.v1.Daemon/ExecuteRepair"
-	Daemon_Shutdown_FullMethodName      = "/envorca.v1.Daemon/Shutdown"
+	Daemon_Ping_FullMethodName             = "/envorca.v1.Daemon/Ping"
+	Daemon_GetStatus_FullMethodName        = "/envorca.v1.Daemon/GetStatus"
+	Daemon_GetRepairPlan_FullMethodName    = "/envorca.v1.Daemon/GetRepairPlan"
+	Daemon_ExecuteRepair_FullMethodName    = "/envorca.v1.Daemon/ExecuteRepair"
+	Daemon_StreamEvents_FullMethodName     = "/envorca.v1.Daemon/StreamEvents"
+	Daemon_GetDiagnostics_FullMethodName   = "/envorca.v1.Daemon/GetDiagnostics"
+	Daemon_GetRepairHistory_FullMethodName = "/envorca.v1.Daemon/GetRepairHistory"
+	Daemon_Shutdown_FullMethodName         = "/envorca.v1.Daemon/Shutdown"
 )
 
 // DaemonClient is the client API for Daemon service.
@@ -42,6 +45,13 @@ type DaemonClient interface {
 	// ExecuteRepair runs a repair action. Destructive actions require
 	// confirmed = true.
 	ExecuteRepair(ctx context.Context, in *ExecuteRepairRequest, opts ...grpc.CallOption) (*RepairOutcome, error)
+	// StreamEvents streams daemon events: the retained replay buffer first
+	// (when replay = true), then live events until the client disconnects.
+	StreamEvents(ctx context.Context, in *StreamEventsRequest, opts ...grpc.CallOption) (grpc.ServerStreamingClient[Event], error)
+	// GetDiagnostics returns recently recorded diagnostic snapshots.
+	GetDiagnostics(ctx context.Context, in *GetDiagnosticsRequest, opts ...grpc.CallOption) (*GetDiagnosticsResponse, error)
+	// GetRepairHistory returns recently recorded repair outcomes.
+	GetRepairHistory(ctx context.Context, in *GetRepairHistoryRequest, opts ...grpc.CallOption) (*GetRepairHistoryResponse, error)
 	// Shutdown requests a graceful daemon stop.
 	Shutdown(ctx context.Context, in *ShutdownRequest, opts ...grpc.CallOption) (*ShutdownResponse, error)
 }
@@ -94,6 +104,45 @@ func (c *daemonClient) ExecuteRepair(ctx context.Context, in *ExecuteRepairReque
 	return out, nil
 }
 
+func (c *daemonClient) StreamEvents(ctx context.Context, in *StreamEventsRequest, opts ...grpc.CallOption) (grpc.ServerStreamingClient[Event], error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	stream, err := c.cc.NewStream(ctx, &Daemon_ServiceDesc.Streams[0], Daemon_StreamEvents_FullMethodName, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	x := &grpc.GenericClientStream[StreamEventsRequest, Event]{ClientStream: stream}
+	if err := x.ClientStream.SendMsg(in); err != nil {
+		return nil, err
+	}
+	if err := x.ClientStream.CloseSend(); err != nil {
+		return nil, err
+	}
+	return x, nil
+}
+
+// This type alias is provided for backwards compatibility with existing code that references the prior non-generic stream type by name.
+type Daemon_StreamEventsClient = grpc.ServerStreamingClient[Event]
+
+func (c *daemonClient) GetDiagnostics(ctx context.Context, in *GetDiagnosticsRequest, opts ...grpc.CallOption) (*GetDiagnosticsResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(GetDiagnosticsResponse)
+	err := c.cc.Invoke(ctx, Daemon_GetDiagnostics_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *daemonClient) GetRepairHistory(ctx context.Context, in *GetRepairHistoryRequest, opts ...grpc.CallOption) (*GetRepairHistoryResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(GetRepairHistoryResponse)
+	err := c.cc.Invoke(ctx, Daemon_GetRepairHistory_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 func (c *daemonClient) Shutdown(ctx context.Context, in *ShutdownRequest, opts ...grpc.CallOption) (*ShutdownResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
 	out := new(ShutdownResponse)
@@ -120,6 +169,13 @@ type DaemonServer interface {
 	// ExecuteRepair runs a repair action. Destructive actions require
 	// confirmed = true.
 	ExecuteRepair(context.Context, *ExecuteRepairRequest) (*RepairOutcome, error)
+	// StreamEvents streams daemon events: the retained replay buffer first
+	// (when replay = true), then live events until the client disconnects.
+	StreamEvents(*StreamEventsRequest, grpc.ServerStreamingServer[Event]) error
+	// GetDiagnostics returns recently recorded diagnostic snapshots.
+	GetDiagnostics(context.Context, *GetDiagnosticsRequest) (*GetDiagnosticsResponse, error)
+	// GetRepairHistory returns recently recorded repair outcomes.
+	GetRepairHistory(context.Context, *GetRepairHistoryRequest) (*GetRepairHistoryResponse, error)
 	// Shutdown requests a graceful daemon stop.
 	Shutdown(context.Context, *ShutdownRequest) (*ShutdownResponse, error)
 	mustEmbedUnimplementedDaemonServer()
@@ -143,6 +199,15 @@ func (UnimplementedDaemonServer) GetRepairPlan(context.Context, *GetRepairPlanRe
 }
 func (UnimplementedDaemonServer) ExecuteRepair(context.Context, *ExecuteRepairRequest) (*RepairOutcome, error) {
 	return nil, status.Error(codes.Unimplemented, "method ExecuteRepair not implemented")
+}
+func (UnimplementedDaemonServer) StreamEvents(*StreamEventsRequest, grpc.ServerStreamingServer[Event]) error {
+	return status.Error(codes.Unimplemented, "method StreamEvents not implemented")
+}
+func (UnimplementedDaemonServer) GetDiagnostics(context.Context, *GetDiagnosticsRequest) (*GetDiagnosticsResponse, error) {
+	return nil, status.Error(codes.Unimplemented, "method GetDiagnostics not implemented")
+}
+func (UnimplementedDaemonServer) GetRepairHistory(context.Context, *GetRepairHistoryRequest) (*GetRepairHistoryResponse, error) {
+	return nil, status.Error(codes.Unimplemented, "method GetRepairHistory not implemented")
 }
 func (UnimplementedDaemonServer) Shutdown(context.Context, *ShutdownRequest) (*ShutdownResponse, error) {
 	return nil, status.Error(codes.Unimplemented, "method Shutdown not implemented")
@@ -240,6 +305,53 @@ func _Daemon_ExecuteRepair_Handler(srv interface{}, ctx context.Context, dec fun
 	return interceptor(ctx, in, info, handler)
 }
 
+func _Daemon_StreamEvents_Handler(srv interface{}, stream grpc.ServerStream) error {
+	m := new(StreamEventsRequest)
+	if err := stream.RecvMsg(m); err != nil {
+		return err
+	}
+	return srv.(DaemonServer).StreamEvents(m, &grpc.GenericServerStream[StreamEventsRequest, Event]{ServerStream: stream})
+}
+
+// This type alias is provided for backwards compatibility with existing code that references the prior non-generic stream type by name.
+type Daemon_StreamEventsServer = grpc.ServerStreamingServer[Event]
+
+func _Daemon_GetDiagnostics_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetDiagnosticsRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(DaemonServer).GetDiagnostics(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: Daemon_GetDiagnostics_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(DaemonServer).GetDiagnostics(ctx, req.(*GetDiagnosticsRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Daemon_GetRepairHistory_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetRepairHistoryRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(DaemonServer).GetRepairHistory(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: Daemon_GetRepairHistory_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(DaemonServer).GetRepairHistory(ctx, req.(*GetRepairHistoryRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 func _Daemon_Shutdown_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(ShutdownRequest)
 	if err := dec(in); err != nil {
@@ -282,10 +394,24 @@ var Daemon_ServiceDesc = grpc.ServiceDesc{
 			Handler:    _Daemon_ExecuteRepair_Handler,
 		},
 		{
+			MethodName: "GetDiagnostics",
+			Handler:    _Daemon_GetDiagnostics_Handler,
+		},
+		{
+			MethodName: "GetRepairHistory",
+			Handler:    _Daemon_GetRepairHistory_Handler,
+		},
+		{
 			MethodName: "Shutdown",
 			Handler:    _Daemon_Shutdown_Handler,
 		},
 	},
-	Streams:  []grpc.StreamDesc{},
+	Streams: []grpc.StreamDesc{
+		{
+			StreamName:    "StreamEvents",
+			Handler:       _Daemon_StreamEvents_Handler,
+			ServerStreams: true,
+		},
+	},
 	Metadata: "envorca/v1/envorca.proto",
 }

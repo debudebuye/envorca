@@ -5,7 +5,10 @@ import (
 	"io"
 	"log/slog"
 	"net"
+	"os"
 	"path/filepath"
+	"runtime"
+	"strconv"
 	"strings"
 	"testing"
 	"time"
@@ -21,17 +24,28 @@ import (
 	"envorca.dev/envorca/daemon/internal/events"
 	"envorca.dev/envorca/daemon/internal/health"
 	"envorca.dev/envorca/daemon/internal/recovery"
+	"envorca.dev/envorca/daemon/internal/state"
 	"envorca.dev/envorca/daemon/internal/wsl"
 )
 
 type harness struct {
-	client       envorcav1.DaemonClient
+	client         envorcav1.DaemonClient
 	setWSLCritical func(bool)
+}
+
+// testEndpoint returns a unique endpoint for the platform: a Windows named
+// pipe on Windows, a Unix socket path elsewhere.
+func testEndpoint(t *testing.T) string {
+	t.Helper()
+	if runtime.GOOS == "windows" {
+		return `\\.\pipe\envorca-test-` + strconv.Itoa(os.Getpid()) + "-" + strings.NewReplacer("/", "_", " ", "_").Replace(t.Name())
+	}
+	return filepath.Join(t.TempDir(), "envorca.sock")
 }
 
 func startTestDaemon(t *testing.T) *harness {
 	t.Helper()
-	ep := filepath.Join(t.TempDir(), "envorca.sock")
+	ep := testEndpoint(t)
 	ln, err := ipc.Listen(ep)
 	if err != nil {
 		t.Fatal(err)
@@ -61,7 +75,15 @@ func startTestDaemon(t *testing.T) *harness {
 		t.Fatal(err)
 	}
 	logger := slog.New(slog.NewTextHandler(io.Discard, nil))
-	d := daemonapi.New(logger, events.New(16), reg, recovery.New(runner), ep, cancel)
+	db, err := state.Open(filepath.Join(t.TempDir(), "db", "state.db"))
+	if err != nil {
+		t.Fatal(err)
+	}
+	t.Cleanup(func() { db.Close() })
+	if err := db.Migrate(ctx); err != nil {
+		t.Fatal(err)
+	}
+	d := daemonapi.New(logger, events.New(16), reg, recovery.New(runner), db, ep, cancel)
 	envorcav1.RegisterDaemonServer(grpcServer, d)
 
 	go func() { grpcServer.Serve(ln) }()
@@ -207,4 +229,139 @@ func TestGetStatusReflectsCriticalOverall(t *testing.T) {
 
 func TestShutdownStops(t *testing.T) {
 	startTestDaemon(t)
+}
+
+func TestDiagnosticsAndRepairHistory(t *testing.T) {
+	h := startTestDaemon(t)
+	ctx := context.Background()
+
+	dg, err := h.client.GetDiagnostics(ctx, &envorcav1.GetDiagnosticsRequest{Limit: 10})
+	if err != nil {
+		t.Fatal(err)
+	}
+	if len(dg.Diagnostics) == 0 {
+		t.Fatal("GetStatus readiness loop should have recorded diagnostics")
+	}
+	if dg.Diagnostics[0].OverallStatus == "" {
+		t.Error("diagnostic missing overall status")
+	}
+	if dg.Diagnostics[0].Payload == "" {
+		t.Error("diagnostic payload not persisted")
+	}
+
+	h.setWSLCritical(true)
+	outcome, err := h.client.ExecuteRepair(ctx, &envorcav1.ExecuteRepairRequest{ActionId: "wsl.start"})
+	if err != nil {
+		t.Fatalf("ExecuteRepair: %v", err)
+	}
+	if !outcome.Success {
+		t.Fatalf("repair outcome not success: %+v", outcome)
+	}
+
+	rh, err := h.client.GetRepairHistory(ctx, &envorcav1.GetRepairHistoryRequest{Limit: 10})
+	if err != nil {
+		t.Fatal(err)
+	}
+	if len(rh.Repairs) == 0 {
+		t.Fatal("ExecuteRepair should have recorded repair history")
+	}
+	rec := rh.Repairs[0]
+	if rec.ActionId != "wsl.start" || !rec.Success {
+		t.Errorf("newest repair = %+v, want successful wsl.start", rec)
+	}
+	if rec.PerformedAt == "" {
+		t.Error("repair record missing timestamp")
+	}
+}
+
+func TestDiagnosticsLimitClamped(t *testing.T) {
+	h := startTestDaemon(t)
+	ctx := context.Background()
+	for i := 0; i < 30; i++ {
+		if _, err := h.client.GetStatus(ctx, &envorcav1.GetStatusRequest{}); err != nil {
+			t.Fatal(err)
+		}
+	}
+	dg, err := h.client.GetDiagnostics(ctx, &envorcav1.GetDiagnosticsRequest{Limit: 5})
+	if err != nil {
+		t.Fatal(err)
+	}
+	if len(dg.Diagnostics) > 5 {
+		t.Errorf("got %d diagnostics, want <= 5", len(dg.Diagnostics))
+	}
+	// Newest first: previous value should not be after the newer ones.
+	if len(dg.Diagnostics) >= 2 && dg.Diagnostics[0].PerformedAt < dg.Diagnostics[1].PerformedAt {
+		t.Error("diagnostics are not newest-first")
+	}
+}
+
+func TestStreamEventsReplay(t *testing.T) {
+	h := startTestDaemon(t)
+	ctx := context.Background()
+
+	h.setWSLCritical(true)
+	if _, err := h.client.ExecuteRepair(ctx, &envorcav1.ExecuteRepairRequest{ActionId: "wsl.start"}); err != nil {
+		t.Fatal(err)
+	}
+
+	stream, err := h.client.StreamEvents(ctx, &envorcav1.StreamEventsRequest{Replay: true})
+	if err != nil {
+		t.Fatal(err)
+	}
+	ev, err := stream.Recv()
+	if err != nil {
+		t.Fatal(err)
+	}
+	if ev.Name != "repair_executed" {
+		t.Errorf("replayed event = %q, want repair_executed", ev.Name)
+	}
+	if ev.Seq == 0 {
+		t.Error("replayed event missing seq")
+	}
+	if ev.Timestamp == "" {
+		t.Error("replayed event missing timestamp")
+	}
+	if ev.Component != "recovery" {
+		t.Errorf("component = %q, want recovery", ev.Component)
+	}
+}
+
+func TestStreamEventsLive(t *testing.T) {
+	h := startTestDaemon(t)
+	ctx := context.Background()
+
+	stream, err := h.client.StreamEvents(ctx, &envorcav1.StreamEventsRequest{Replay: false})
+	if err != nil {
+		t.Fatal(err)
+	}
+	time.Sleep(150 * time.Millisecond) // let the server subscription land
+
+	h.setWSLCritical(true)
+	if _, err := h.client.ExecuteRepair(ctx, &envorcav1.ExecuteRepairRequest{ActionId: "wsl.start"}); err != nil {
+		t.Fatal(err)
+	}
+
+	type recv struct {
+		ev  *envorcav1.Event
+		err error
+	}
+	ch := make(chan recv, 1)
+	go func() {
+		ev, err := stream.Recv()
+		ch <- recv{ev, err}
+	}()
+	select {
+	case r := <-ch:
+		if r.err != nil {
+			t.Fatalf("stream recv: %v", r.err)
+		}
+		if r.ev.Name != "repair_executed" {
+			t.Errorf("live event = %q, want repair_executed", r.ev.Name)
+		}
+		if r.ev.Seq == 0 {
+			t.Error("live event missing seq")
+		}
+	case <-time.After(3 * time.Second):
+		t.Fatal("no live event received")
+	}
 }

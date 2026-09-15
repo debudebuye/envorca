@@ -10,7 +10,6 @@ import (
 	"github.com/spf13/cobra"
 
 	envorcav1 "envorca.dev/envorca/api/gen/go/envorca/v1"
-	"envorca.dev/envorca/api/ipc"
 	"envorca.dev/envorca/cli/internal/client"
 )
 
@@ -23,7 +22,7 @@ var statusCmd = &cobra.Command{
 	Short: "Show daemon and environment status",
 	RunE: func(cmd *cobra.Command, args []string) error {
 		ctx := cmd.Context()
-		endpoint := ipc.DefaultEndpoint(ipc.DefaultStateDir())
+		endpoint := commandEndpoint()
 		if !client.Probe(ctx, endpoint) {
 			return errors.New("Envorca daemon is not running.\nRun 'envorca start' to launch it.")
 		}
@@ -48,6 +47,7 @@ func renderStatus(w io.Writer, st *envorcav1.EnvironmentStatus) {
 	f("  Version:  %s", st.Version)
 	f("  Socket:   %s", st.Socket)
 	f("  Uptime:   %s", formatUptime(st.UptimeSeconds))
+	f("  Overall:  %s", decorateStatus(st.OverallStatus, plainStatus(st.OverallStatus)))
 	f("")
 	f("  COMPONENTS")
 	for _, c := range st.Components {

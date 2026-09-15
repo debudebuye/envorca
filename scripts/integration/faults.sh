@@ -9,7 +9,7 @@ set -euo pipefail
 DIR="${1:-dist}"
 mkdir -p "$DIR"
 
-export ENVORCA_SOCKET="${ENVORCA_SOCKET:-/tmp/rkfaultrun/envorca-fault.sock}"
+export ENVORCA_SOCKET="${ENVORCA_SOCKET:-envorca-fault.sock}"
 export PATH="$DIR:$PATH"
 
 cleanup() {
@@ -21,7 +21,8 @@ trap cleanup EXIT
 cleanup
 
 echo "=== Start daemon ==="
-envorca start --daemon "$DIR/envorcad.exe"
+export ENVORCA_DAEMON_BIN="$DIR/envorcad.exe"
+envorca start
 sleep 1
 envorca status >/dev/null 2>&1 || { echo "FAIL: daemon not ready"; exit 1; }
 echo "daemon ready"

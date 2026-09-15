@@ -7,13 +7,23 @@ package diagnosis
 import (
 	"context"
 	"fmt"
+	"strconv"
 	"strings"
 	"time"
 
 	envorcav1 "envorca.dev/envorca/api/gen/go/envorca/v1"
 	"envorca.dev/envorca/daemon/internal/health"
+	"envorca.dev/envorca/daemon/internal/runtime"
 	"envorca.dev/envorca/daemon/internal/system"
 	"envorca.dev/envorca/daemon/internal/wsl"
+)
+
+// minKernelMajor and minKernelMinor are the lowest WSL2 kernel version the
+// daemon considers healthy. WSL2 has shipped kernels >= 5.10 for years; an
+// older kernel indicates a stale WSL install that should be updated.
+const (
+	minKernelMajor = 5
+	minKernelMinor = 10
 )
 
 // Options configure the default registry.
@@ -21,6 +31,9 @@ type Options struct {
 	// WSLRunner is the wsl.exe invocation runner. Defaults to
 	// wsl.DefaultRunner when nil.
 	WSLRunner wsl.Runner
+	// RuntimeDriver is the container bridge. Defaults to a Docker driver
+	// using WSLRunner when nil.
+	RuntimeDriver runtime.Driver
 }
 
 // Registry builds the default component registry for the daemon. Order is
@@ -28,6 +41,9 @@ type Options struct {
 func Registry(opts Options) (*health.Registry, error) {
 	if opts.WSLRunner == nil {
 		opts.WSLRunner = wsl.DefaultRunner()
+	}
+	if opts.RuntimeDriver == nil {
+		opts.RuntimeDriver = runtime.NewDocker(opts.WSLRunner)
 	}
 	reg := health.NewRegistry()
 	type entry struct {
@@ -42,6 +58,7 @@ func Registry(opts Options) (*health.Registry, error) {
 		{"wsl", wslProbe(opts.WSLRunner), 8 * time.Second},
 		{"linux_kernel", kernelProbe(opts.WSLRunner), 3 * time.Second},
 		{"resources", resourcesProbe(), time.Second},
+		{"container_runtime", containerProbe(opts.RuntimeDriver), 8 * time.Second},
 	}
 	for _, e := range entries {
 		p := e.probe
@@ -130,8 +147,40 @@ func kernelProbe(runner wsl.Runner) health.Probe {
 				Summary: "kernel version unavailable",
 			}
 		}
+		maj, min, ok := parseKernelVersion(kv)
+		if !ok {
+			return envorcav1.ComponentStatus{Status: envorcav1.Status_HEALTHY, Summary: kv}
+		}
+		if maj < minKernelMajor || (maj == minKernelMajor && min < minKernelMinor) {
+			return envorcav1.ComponentStatus{
+				Status:         envorcav1.Status_WARNING,
+				Summary:        fmt.Sprintf("kernel %s is older than the required %d.%d", kv, minKernelMajor, minKernelMinor),
+				Reason:         "An outdated WSL kernel can cause VM and container stability problems.",
+				Recommendation: "Update WSL: run `wsl --update` from an elevated shell.",
+				SafeToFix:      false,
+			}
+		}
 		return envorcav1.ComponentStatus{Status: envorcav1.Status_HEALTHY, Summary: kv}
 	}
+}
+
+// parseKernelVersion extracts the leading numeric major/minor from a kernel
+// version string such as "5.15.90.1-microsoft-standard-WSL2".
+func parseKernelVersion(s string) (major, minor int, ok bool) {
+	core := s
+	if i := strings.IndexAny(s, "-+_"); i >= 0 {
+		core = s[:i]
+	}
+	parts := strings.Split(core, ".")
+	if len(parts) < 2 {
+		return 0, 0, false
+	}
+	maj, err1 := strconv.Atoi(parts[0])
+	min, err2 := strconv.Atoi(parts[1])
+	if err1 != nil || err2 != nil {
+		return 0, 0, false
+	}
+	return maj, min, true
 }
 
 func resourcesProbe() health.Probe {
@@ -157,4 +206,54 @@ func resourcesProbe() health.Probe {
 
 func gb(n uint64) float64 {
 	return float64(n) / (1024 * 1024 * 1024)
+}
+
+// containerProbe diagnoses the container runtime reachable through the
+// default WSL distribution (ADR-0001). It reports UNKNOWN when there is no
+// Linux environment to run in, WARNING when docker is not installed, and
+// CRITICAL when the docker daemon is not answering.
+func containerProbe(driver runtime.Driver) health.Probe {
+	return func(ctx context.Context) envorcav1.ComponentStatus {
+		if !wsl.Available() {
+			return envorcav1.ComponentStatus{Status: envorcav1.Status_UNKNOWN, Summary: "WSL not installed; container check skipped"}
+		}
+		info := driver.Ping(ctx)
+		if info.Err != nil {
+			return envorcav1.ComponentStatus{
+				Status:  envorcav1.Status_UNKNOWN,
+				Summary: "cannot reach container runtime",
+				Reason:  info.Err.Error(),
+			}
+		}
+		if info.ClientVersion == "" {
+			return envorcav1.ComponentStatus{
+				Status:         envorcav1.Status_WARNING,
+				Summary:        "Docker CLI is not installed in the default distribution",
+				Reason:         "Development containers need the Docker CLI inside the WSL distribution.",
+				Recommendation: "Install Docker (e.g. `sudo apt-get install docker.io` inside the distribution) or use Docker Desktop with WSL integration enabled.",
+				SafeToFix:      false,
+			}
+		}
+		if info.ServerVersion == "" {
+			return envorcav1.ComponentStatus{
+				Status:         envorcav1.Status_CRITICAL,
+				Summary:        "Docker CLI present but the Docker daemon is not responding",
+				Reason:         "Containers cannot run while the Docker daemon is stopped.",
+				Recommendation: "Start the Docker service (`sudo service docker start` in the distribution) or start Docker Desktop.",
+				SafeToFix:      false,
+			}
+		}
+		summary := fmt.Sprintf("Docker ready (server %s)", info.ServerVersion)
+		containers, err := driver.ListContainers(ctx, true)
+		if err == nil {
+			running := 0
+			for _, c := range containers {
+				if c.State == "running" {
+					running++
+				}
+			}
+			summary += fmt.Sprintf("; %d running, %d total", running, len(containers))
+		}
+		return envorcav1.ComponentStatus{Status: envorcav1.Status_HEALTHY, Summary: summary}
+	}
 }

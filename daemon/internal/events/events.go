@@ -9,6 +9,9 @@ import (
 // persisted for diagnostics. It follows the structured-logging vocabulary:
 // {level, component, event, project?, fields...}.
 type Event struct {
+	// Seq is the daemon-wide sequence stamped by the bus on Publish. It is
+	// 0 for events that were only built, never published.
+	Seq       uint64         `json:"seq"`
 	Timestamp time.Time      `json:"timestamp"`
 	Level     string         `json:"level"`
 	Component string         `json:"component"`
@@ -39,6 +42,7 @@ func (b *Bus) Publish(ev Event) {
 	}
 	b.mu.Lock()
 	b.seq++
+	ev.Seq = b.seq
 	b.buffer = append(b.buffer, ev)
 	if len(b.buffer) > b.max {
 		b.buffer = b.buffer[len(b.buffer)-b.max:]

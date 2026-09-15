@@ -2,11 +2,11 @@ package main
 
 import (
 	"fmt"
+	"os"
 	"time"
 
 	"github.com/spf13/cobra"
 
-	"envorca.dev/envorca/api/ipc"
 	"envorca.dev/envorca/cli/internal/client"
 	"envorca.dev/envorca/cli/internal/runner"
 )
@@ -22,7 +22,7 @@ var startCmd = &cobra.Command{
 	RunE: func(cmd *cobra.Command, args []string) error {
 		ctx := cmd.Context()
 		out := cmd.OutOrStdout()
-		endpoint := ipc.DefaultEndpoint(ipc.DefaultStateDir())
+		endpoint := commandEndpoint()
 		if client.Probe(ctx, endpoint) {
 			fmt.Fprintln(out, "Envorca daemon is already running.")
 			return nil
@@ -36,6 +36,13 @@ var startCmd = &cobra.Command{
 			return fmt.Errorf("open spawn log: %w", err)
 		}
 		defer logFile.Close()
+		if cfg := configPath(); cfg != "" {
+			// The daemon picks up the same config file the CLI resolved the
+			// endpoint from (configuration.md), via ENVORCA_CONFIG.
+			if err := os.Setenv("ENVORCA_CONFIG", cfg); err != nil {
+				return fmt.Errorf("set config for daemon: %w", err)
+			}
+		}
 		if err := runner.Spawn(bin, logFile); err != nil {
 			return fmt.Errorf("start daemon: %w", err)
 		}
@@ -58,7 +65,7 @@ var stopCmd = &cobra.Command{
 	RunE: func(cmd *cobra.Command, args []string) error {
 		ctx := cmd.Context()
 		out := cmd.OutOrStdout()
-		endpoint := ipc.DefaultEndpoint(ipc.DefaultStateDir())
+		endpoint := commandEndpoint()
 		if !client.Probe(ctx, endpoint) {
 			fmt.Fprintln(out, "Envorca daemon is not running.")
 			return nil

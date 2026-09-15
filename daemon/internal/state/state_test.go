@@ -24,8 +24,8 @@ func TestMigrateAndSettings(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	if v != 1 {
-		t.Errorf("schema version = %d, want 1", v)
+	if v != 2 {
+		t.Errorf("schema version = %d, want 2", v)
 	}
 
 	if s, err := db.GetSetting(ctx, "nope"); err != nil || s != "" {
