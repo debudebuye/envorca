@@ -1,5 +1,4 @@
-<!-- banner: place an orca/banner image here (see assets/banner.png) -->
-<!-- <p align="center"><img src="assets/banner.png" alt="Envorca — Linux development on Windows just work" width="700"></p> -->
+<p align="center"><img src="assets/banner.svg" alt="Envorca — Linux development on Windows just work" width="700"></p>
 
 <p align="center">
   <strong>Envorca makes Linux development on Windows just work.</strong>
