@@ -4,8 +4,9 @@
 # binaries); use `make build VERSION=x.y.z` to pin a specific version.
 
 VERSION ?= $(shell git describe --tags --always 2>/dev/null || echo 0.1.0-dev)
-DAEMON_LDFLAGS = -s -w -X envorca.dev/envorca/daemon/internal/version.Version=$(VERSION)
-CLI_LDFLAGS    = -s -w -X envorca.dev/envorca/cli/cmd/envorca.cliVersion=$(VERSION)
+COMMIT ?= $(shell git rev-parse --short HEAD 2>/dev/null || echo unknown)
+DAEMON_LDFLAGS = -s -w -X envorca.dev/envorca/daemon/internal/version.Version=$(VERSION) -X envorca.dev/envorca/daemon/internal/version.Commit=$(COMMIT)
+CLI_LDFLAGS    = -s -w -X envorca.dev/envorca/cli/cmd/envorca.cliVersion=$(VERSION) -X envorca.dev/envorca/cli/cmd/envorca.cliCommit=$(COMMIT)
 GO ?= go
 
 .PHONY: all build test vet proto cross clean install

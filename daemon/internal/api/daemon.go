@@ -71,7 +71,7 @@ func (d *Daemon) State() string {
 // Ping reports daemon identity and liveness.
 func (d *Daemon) Ping(ctx context.Context, in *envorcav1.PingRequest) (*envorcav1.PingResponse, error) {
 	return &envorcav1.PingResponse{
-		Version:       version.Version,
+		Version:       version.Full(),
 		DaemonState:   d.State(),
 		UptimeSeconds: int64(time.Since(d.started) / time.Second),
 		Socket:        d.endpoint,
@@ -84,7 +84,7 @@ func (d *Daemon) GetStatus(ctx context.Context, in *envorcav1.GetStatusRequest) 
 	components := d.health.Snapshot(ctx)
 	overall := health.OverallStatus(components)
 	st := &envorcav1.EnvironmentStatus{
-		Version:       version.Version,
+		Version:       version.Full(),
 		DaemonState:   d.State(),
 		UptimeSeconds: int64(time.Since(d.started) / time.Second),
 		Socket:        d.endpoint,

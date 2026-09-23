@@ -46,7 +46,7 @@ func run() error {
 	flag.Parse()
 
 	if *showVersion {
-		fmt.Println(version.Version)
+		fmt.Println(version.Full())
 		return nil
 	}
 
@@ -72,7 +72,7 @@ func run() error {
 
 	bus := events.New(256)
 	bus.Publish(events.Event{Level: "info", Component: "daemon", Name: "starting",
-		Fields: map[string]any{"version": version.Version, "state_dir": cfg.StateDir}})
+		Fields: map[string]any{"version": version.Full(), "state_dir": cfg.StateDir}})
 
 	db, err := state.Open(cfg.DBPath())
 	if err != nil {
@@ -119,7 +119,7 @@ func run() error {
 		serveErr <- grpcServer.Serve(ln)
 	}()
 
-	logger.Info("daemon started", "version", version.Version, "endpoint", endpoint, "state_dir", cfg.StateDir)
+	logger.Info("daemon started", "version", version.Full(), "endpoint", endpoint, "state_dir", cfg.StateDir)
 
 	var stopOnce sync.Once
 	stop := func(reason string) {
